@@ -1,0 +1,8 @@
+theme = catppuccin-mocha 
+font-family = "Hack Nerd Font"
+font-size = 16
+cursor-style = block
+copy-on-select = clipboard
+
+background-opacity = 0.8
+background-blur=true

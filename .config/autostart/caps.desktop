@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=gsettings set org.gnome.desktop.input-sources xkb-options "['caps:escape']"
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Keyboard Fix
+Comment=Set Caps Lock to Escape on login
+

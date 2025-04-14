@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+echo "🔤 Installing Hack Nerd Font..."
+
+FONT_DIR="$HOME/.local/share/fonts"
+mkdir -p "$FONT_DIR"
+
+# Download and extract Hack Nerd Font
+wget -q https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip -O /tmp/Hack.zip
+
+echo "📦 Extracting..."
+unzip -qo /tmp/Hack.zip -d "$FONT_DIR"
+
+echo "🔁 Refreshing font cache..."
+fc-cache -fv > /dev/null
+
+
+echo "✅ Hack Nerd Font installed and configured."
+
