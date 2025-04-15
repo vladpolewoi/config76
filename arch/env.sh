@@ -63,7 +63,7 @@ copy_file() {
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 copy_dir .config $XDG_CONFIG_HOME
+copy_file .zshrc $HOME
 # copy_dir .local $HOME/.local 
 # copy_file .specialconfig $HOME
-# copy_file .zshrc $HOME
 # copy_file .ready-tmux $HOME

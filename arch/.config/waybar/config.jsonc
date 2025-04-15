@@ -1,0 +1,9 @@
+{
+  "layer": "top",
+  "position": "top",
+  "modules-center": ["clock"],
+  "clock": {
+    "format": "   {:%H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}"
+  }
+}

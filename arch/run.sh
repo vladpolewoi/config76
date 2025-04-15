@@ -36,7 +36,7 @@ execute() {
 log "$script_dir --$filter"
 
 cd $script_dir
-scripts=$(find ./arch-runs -maxdepth 2 -mindepth 1 -executable -type f)
+scripts=$(find ./runs -maxdepth 2 -mindepth 1 -executable -type f)
 
 # Run scripts
 for script in $scripts; do
