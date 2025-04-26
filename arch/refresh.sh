@@ -8,10 +8,6 @@ echo "=-=-=-=- Reloading Configs -=-=-=-="
 hyprctl reload
 
 # Restart Waybar
-pkill -9 waybar && waybar &
-
-
-
-
-
+pkill waybar
+setsid waybar >/dev/null 2>&1 < /dev/null &
 

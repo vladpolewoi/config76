@@ -1,0 +1,36 @@
+@define-color bg          #100F0F;
+@define-color fg          #FFFCF0;
+@define-color fg-dim      #C5C9C5;
+
+/* Neutrals */
+@define-color surface-0   #1E1E1E;
+@define-color surface-1   #2A2A2A;
+@define-color surface-2   #363636;
+@define-color surface-3   #424242;
+
+/* Accents */
+@define-color accent-red      #AF3029;
+@define-color accent-orange   #BC5215;
+@define-color accent-yellow   #AD8301;
+@define-color accent-green    #66800B;
+@define-color accent-cyan     #24837B;
+@define-color accent-blue     #205EA6;
+@define-color accent-purple   #5E409D;
+@define-color accent-magenta  #A02F6F;
+
+/* Brights (often used for hover/highlights/active) */
+@define-color bright-red      #D14D41;
+@define-color bright-orange   #E66100;
+@define-color bright-yellow   #D0A215;
+@define-color bright-green    #879A39;
+@define-color bright-cyan     #3AA99F;
+@define-color bright-blue     #4385BE;
+@define-color bright-purple   #7D5FB4;
+@define-color bright-magenta  #CE5D97;
+
+/* Terminal standard colors */
+@define-color term-black      #100F0F;
+@define-color term-white      #C5C9C5;
+@define-color term-bright-black  #5C5D5C;
+@define-color term-bright-white  #FFFCF0;
+

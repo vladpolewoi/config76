@@ -1,0 +1,37 @@
+/* Tokyonight Dark - Converted */
+
+@define-color bg          #1a1b26;
+@define-color fg          #c0caf5;
+@define-color fg-dim      #a9b1d6;
+
+/* Neutrals */
+@define-color surface-0   #1f2335;
+@define-color surface-1   #24283b;
+@define-color surface-2   #2e3348;
+@define-color surface-3   #3b4261;
+
+/* Accents */
+@define-color accent-red      #f7768e;
+@define-color accent-orange   #ff9e64;
+@define-color accent-yellow   #e0af68;
+@define-color accent-green    #9ece6a;
+@define-color accent-cyan     #7dcfff;
+@define-color accent-blue     #7aa2f7;
+@define-color accent-purple   #9d7cd8;
+@define-color accent-magenta  #bb9af7;
+
+/* Brights (hover/highlight/active) */
+@define-color bright-red      #db4b4b;
+@define-color bright-orange   #ffb86c;
+@define-color bright-yellow   #f1fa8c;
+@define-color bright-green    #50fa7b;
+@define-color bright-cyan     #8be9fd;
+@define-color bright-blue     #6272a4;
+@define-color bright-purple   #bd93f9;
+@define-color bright-magenta  #ff79c6;
+
+/* Terminal standard colors */
+@define-color term-black         #1a1b26;
+@define-color term-white         #c0caf5;
+@define-color term-bright-black  #3b4261;
+@define-color term-bright-white  #f0f0f0;

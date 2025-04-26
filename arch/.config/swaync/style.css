@@ -1,0 +1,55 @@
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 16px;
+  border-radius: 16px;
+  padding: 6px;
+}
+
+/* Toasts */
+.notification {
+  background-color: #100f0f;
+  color: #fffcf0;
+  border: 2px solid #ad8301;
+  margin: 6px;
+  opacity: 0.8;
+}
+
+/* App name */
+.notification .app-name {
+  font-weight: bold;
+  color: #ad8301;
+}
+
+/* Title */
+.notification .summary {
+  font-weight: bold;
+  color: #c5c9c5;
+}
+
+/* Body */
+.notification .body {
+  color: #c5c9c5;
+}
+
+/* Actions */
+.notification .actions button {
+  background-color: #1e1e1e;
+  color: #fffcf0;
+  border: 1px solid #205ea6;
+  border-radius: 8px;
+  margin: 4px 2px;
+  padding: 4px 8px;
+}
+
+/* Notification Center Panel */
+.control-center {
+  background-color: #100f0f;
+  color: #fffcf0;
+  border: 2px solid #ad8301;
+}
+
+/* Dismiss buttons */
+.control-center .notification-row .close-button {
+  background-color: transparent;
+  color: #ad8301;
+}

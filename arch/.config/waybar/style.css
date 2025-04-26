@@ -1,29 +1,136 @@
+@import "tokyonight.css";
+
 * {
-  font-family: JetBrainsMono Nerd Font, monospace;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  padding: 0 6px;
-  margin: 0;
-  color: #ffffff;
+  font-family: "Jetbrains Mono Bold";
+  font-weight: 600;
+  font-size: 18px;
 }
 
 window#waybar {
-  background: rgba(20, 20, 20, 0.9);
-  border-bottom: 1px solid #444;
-}
-
-#workspace button {
-  padding: 0 10px;
   background: transparent;
-  color: #ccc;
 }
 
-#workspace button.active {
-  background: #5e81ac;
-  color: #fff;
+#workspaces {
+  margin: 12px 0 0 12px;
+  background-color: @bg;
+  border-radius: 16px;
+  opacity: 0.8;
 }
 
-#clock {
-  padding: 0 10px;
+#workspaces button {
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
 }
+
+#workspaces button:nth-child(1) {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  color: @accent-green;
+}
+#workspaces button.active:nth-child(1) {
+  background-color: @accent-green;
+  color: @bg;
+}
+#workspaces button:nth-child(2) {
+  color: @accent-cyan;
+}
+#workspaces button.active:nth-child(2) {
+  background-color: @accent-cyan;
+  color: @bg;
+}
+#workspaces button:nth-child(3) {
+  color: @accent-blue;
+}
+#workspaces button.active:nth-child(3) {
+  background-color: @accent-blue;
+  color: @bg;
+}
+#workspaces button:nth-child(4) {
+  color: @accent-purple;
+}
+#workspaces button.active:nth-child(4) {
+  background-color: @accent-purple;
+  color: @bg;
+}
+#workspaces button:nth-child(5) {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  color: @accent-red;
+}
+#workspaces button.active:nth-child(5) {
+  background-color: @accent-red;
+  color: @bg;
+}
+
+#workspaces button:hover {
+  background: @bg;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  text-shadow: none;
+  transition: none;
+}
+
+#network {
+  margin-top: 6px;
+  margin-left: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 0px;
+  border-radius: 10px;
+  transition: none;
+  color: @bg;
+  background: @bright-blue;
+}
+
+#clock.date,
+#clock.time,
+#cpu,
+#memory,
+#pulseaudio {
+  margin-top: 12px;
+  background: @bg;
+  opacity: 0.8;
+}
+
+/*MIDDLE*/
+
+#clock.time {
+  color: @accent-green;
+  border-radius: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+/*---*/
+
+/*RIGHT*/
+#clock.date {
+  color: @accent-cyan;
+  border-radius: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
+  margin-right: 16px;
+}
+
+#cpu {
+  color: @bright-red;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  padding-left: 16px;
+  padding-right: 12px;
+}
+#memory {
+  margin-left: 0px;
+  color: @bright-yellow;
+  padding-right: 12px;
+}
+#pulseaudio {
+  color: @bright-cyan;
+  padding-right: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-right: 12px;
+  min-width: 60px;
+}
+/*---*/

@@ -1,1 +1,2 @@
-require('config.lazy')
+require("config.lazy")
+require("core.colorscheme_loader")
