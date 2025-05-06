@@ -11,3 +11,8 @@ hyprctl reload
 pkill waybar
 setsid waybar >/dev/null 2>&1 < /dev/null &
 
+# Restart Swaync
+pkill swaync
+swaync >/dev/null 2>&1 < /dev/null &
+
+

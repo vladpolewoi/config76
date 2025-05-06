@@ -2,7 +2,15 @@
   "layer": "top",
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["clock#time"],
-  "modules-right": ["clock#date", "network", "cpu", "memory", "pulseaudio"],
+  "modules-right": [
+    "custom/music",
+    "custom/weather",
+    "clock#date",
+    "network",
+    "cpu",
+    "memory",
+    "pulseaudio",
+  ],
 
   "hyprland/workspaces": {
     "format": "{name}",
@@ -45,6 +53,14 @@
     "format": "<span></span> {:%H:%M}",
     "tooltip": false,
     "interval": 60,
+  },
+
+  "custom/weather": {
+    "interval": 900,
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/get-weather.sh",
+    "return-type": "plain",
+    "tooltip": false,
   },
 
   "clock#date": {

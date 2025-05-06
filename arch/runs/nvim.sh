@@ -4,7 +4,7 @@ set -e
 
 echo "=-=-=-=- Installing Neovim v0.10.1 from source -=-=-=-="
 
-sudo pacman -S --needed --noconfirm lua51 cmake base-devel ninja ripgrep fzf
+sudo pacman -S --needed --noconfirm lua51 cmake base-devel ninja ripgrep fzf jq
 
 echo "=-=-=-=- Clonning Neovim source -=-=-=-="
 

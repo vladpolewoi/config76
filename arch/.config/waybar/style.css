@@ -1,4 +1,4 @@
-@import "tokyonight.css";
+@import "../utils/tokyonight.css";
 
 * {
   font-family: "Jetbrains Mono Bold";
@@ -85,6 +85,7 @@ window#waybar {
 }
 
 #clock.date,
+#custom-weather,
 #clock.time,
 #cpu,
 #memory,
@@ -102,11 +103,20 @@ window#waybar {
   padding-right: 16px;
   padding-left: 16px;
 }
+
 /*---*/
 
 /*RIGHT*/
 #clock.date {
   color: @accent-cyan;
+  border-radius: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
+  margin-right: 16px;
+}
+
+#custom-weather {
+  color: @accent-yellow;
   border-radius: 16px;
   padding-right: 16px;
   padding-left: 16px;

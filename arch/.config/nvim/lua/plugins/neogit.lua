@@ -6,8 +6,21 @@ return {
 
 		"nvim-telescope/telescope.nvim", -- optional
 	},
+	keys = {
+		{
+			"<leader>gg",
+			function()
+				vim.cmd("DiffviewClose") -- closes Diffview if it's open
+				vim.cmd("enew") -- creates a brand-new buffer
+				vim.schedule(function()
+					require("neogit").open()
+				end)
+			end,
+			desc = "Safe Neogit after Diffview",
+		},
+	},
 	config = function()
-		require("neogit").setup()
+		require("neogit").setup({ kind = "tab" })
 
 		-- Section headers
 		vim.api.nvim_set_hl(0, "NeogitSectionHeader", { fg = "#F2F0E5", bold = true })
