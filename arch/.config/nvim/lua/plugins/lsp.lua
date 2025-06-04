@@ -10,6 +10,7 @@ return {
 			vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 		-- Setup your LSPs
+		lspconfig.tailwindcss.setup({ capabilities = capabilities })
 		lspconfig.ts_ls.setup({ capabilities = capabilities })
 		lspconfig.rust_analyzer.setup({ capabilities = capabilities })
 		lspconfig.lua_ls.setup({

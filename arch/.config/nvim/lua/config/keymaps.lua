@@ -6,9 +6,13 @@ vim.keymap.set("n", "<leader>w", ":w<CR>")
 
 -- LSP Docs
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "LSP Hover Docs" })
+vim.keymap.set("n", "<leader>d", function()
+	vim.diagnostic.open_float(nil, { focus = true })
+end, { desc = "Show diagnostic under cursor" })
 
 -- Jump
 vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to Implementation" })
+vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", { desc = "LSP References" })
 
 -- Theme Picker
 vim.keymap.set("n", "<C-t>", function()

@@ -68,7 +68,7 @@ declare -A WEATHER_SYMBOL=(
   ["Unknown"]="✨" ["Cloudy"]="" ["Fog"]="" ["HeavyRain"]="" ["HeavyShowers"]=""
   ["HeavySnow"]="" ["HeavySnowShowers"]="" ["LightRain"]="" ["LightShowers"]=""
   ["LightSleet"]="" ["LightSleetShowers"]="" ["LightSnow"]="" ["LightSnowShowers"]=""
-  ["PartlyCloudy"]="" ["Sunny"]="" ["ThunderyHeavyRain"]="" ["ThunderyShowers"]=""
+  ["PartlyCloudy"]="󰖕" ["Sunny"]="" ["ThunderyHeavyRain"]="" ["ThunderyShowers"]=""
   ["ThunderySnowShowers"]="" ["VeryCloudy"]=""
 )
 

@@ -40,6 +40,9 @@
     "backlight"
   ],
   "widget-config": {
+    "popup": {
+      "focusable": false
+    },
     "title": {
       "text": "Notifications",
       "clear-all-button": true,
