@@ -1,5 +1,5 @@
 width=800
-height=600
+height=800
 location=center
 show=drun
 prompt=Search...
@@ -11,10 +11,10 @@ orientation=vertical
 content_halign=fill
 insensitive=true
 allow_images=true
-image_size=64
+image_size=48
 columns=2
 gtk_dark=true
+line_wrap=word
 
-key_down=j
-key_up=k
+
 term=kitty
