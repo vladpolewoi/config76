@@ -1,5 +1,5 @@
-@import ".config/wofi/style.css";
+@import "~/.config/wofi/style.css";
 window {
-	font-family: "JetBrains Nerd Font Mono";
-	font-size: 16px;
+    font-family: "JetBrains Nerd Font Mono";
+    font-size: 24px;
 }
