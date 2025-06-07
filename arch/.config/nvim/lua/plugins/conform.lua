@@ -19,6 +19,22 @@ return {
 				rust = { "rustfmt" },
 				sh = { "shfmt" },
 			},
+			formatters = {
+				prettier = {
+					prepend_args = {
+						"--single-quote",
+						"true",
+						"--semi",
+						"true",
+						"--print-width",
+						"100",
+						"--tab-width",
+						"2",
+						"--end-of-line",
+						"cr",
+					},
+				},
+			},
 		})
 
 		vim.api.nvim_create_autocmd("BufWritePre", {
@@ -36,4 +52,3 @@ return {
 		})
 	end,
 }
-

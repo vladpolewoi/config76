@@ -1,0 +1,3 @@
+gui:
+  openCommand: 'nvim {{filename}}'
+

@@ -19,7 +19,7 @@ return {
 			defaults = {
 				layout_config = {
 					horizontal = { preview_width = 0.55 },
-					prompt_position = "top",
+					prompt_position = "bottom",
 				},
 				sorting_strategy = "ascending",
 				winblend = 10, -- transparency
@@ -45,6 +45,7 @@ return {
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find Files" })
 		vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Grep Text" })
+		vim.keymap.set("n", "<leader>fr", builtin.resume, { desc = "Resume" })
 		vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Open Buffers" })
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Help Tags" })
 		vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { desc = "Recent Files" })

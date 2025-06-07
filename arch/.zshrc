@@ -16,3 +16,5 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # Map git
 alias gch='git checkout'
 
+export EDITOR="nvim"
+

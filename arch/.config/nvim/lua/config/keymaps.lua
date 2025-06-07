@@ -2,7 +2,7 @@
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
 -- Save
-vim.keymap.set("n", "<leader>w", ":w<CR>")
+vim.keymap.set("n", "<leader>w", "<cmd>silent! write<CR>", { desc = "Silent Save" })
 
 -- LSP Docs
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "LSP Hover Docs" })
