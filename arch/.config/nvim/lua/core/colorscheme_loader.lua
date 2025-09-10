@@ -1,24 +1,42 @@
-local function load_last_colorscheme()
-	local path = vim.fn.stdpath("config") .. "/last_colorscheme.txt"
-	local file = io.open(path, "r")
-	if not file then
-		vim.notify("No saved colorscheme found", vim.log.levels.INFO)
-		return
-	end
+-- ~/.config/nvim/lua/persist_colorscheme.lua (load with VeryLazy)
+local state_dir = vim.fn.stdpath("state") .. "/colors"
+vim.fn.mkdir(state_dir, "p")
+local save_file = state_dir .. "/last_colorscheme.txt"
 
-	local theme_name = file:read("*l")
-	file:close()
-
-	if theme_name and #theme_name > 0 then
-		vim.notify("Loading theme: " .. theme_name)
-		local ok, err = pcall(vim.cmd.colorscheme, theme_name)
-		if not ok then
-			vim.notify("Failed to load theme: " .. theme_name, vim.log.levels.ERROR)
-			vim.cmd.colorscheme("habmax")
-		end
-	else
-		vim.notify("Empty theme name in save file", vim.log.levels.WARN)
+local function save_scheme(name)
+	local f = io.open(save_file, "w")
+	if f then
+		f:write(name)
+		f:close()
 	end
 end
 
-load_last_colorscheme()
+local function load_scheme()
+	local f = io.open(save_file, "r")
+	if not f then
+		return
+	end
+	local name = f:read("*l")
+	f:close()
+	if name and #name > 0 then
+		local ok = pcall(vim.cmd.colorscheme, name)
+		if not ok then
+			pcall(vim.cmd.colorscheme, "habamax")
+		end
+	end
+end
+
+-- Save whenever colorscheme changes
+vim.api.nvim_create_augroup("PersistColorscheme", { clear = true })
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = "PersistColorscheme",
+	callback = function(args)
+		save_scheme(args.match)
+	end,
+})
+
+-- Load after plugins/themes are ready
+vim.api.nvim_create_autocmd("VimEnter", {
+	group = "PersistColorscheme",
+	callback = load_scheme,
+})
