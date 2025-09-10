@@ -18,3 +18,15 @@ vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", { desc = "LSP Ref
 vim.keymap.set("n", "<C-t>", function()
 	require("core.theme_picker").pick_theme()
 end, { noremap = true, silent = true, desc = "Pick Colorscheme" })
+
+-- Global toggle for format on save
+vim.g.format_on_save = true
+
+-- Function to toggle it
+function ToggleFormatOnSave()
+	vim.g.format_on_save = not vim.g.format_on_save
+	print("Format on save: " .. (vim.g.format_on_save and "ON" or "OFF"))
+end
+
+-- Map a hotkey (e.g., <leader>tf)
+vim.keymap.set("n", "<leader>tf", ToggleFormatOnSave, { desc = "Toggle format on save" })

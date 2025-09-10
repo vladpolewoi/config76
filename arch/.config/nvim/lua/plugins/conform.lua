@@ -21,6 +21,21 @@ return {
 			},
 			formatters = {
 				prettier = {
+					require_cwd = true,
+					cwd = require("conform.util").root_file({
+						".prettierrc",
+						".prettierrc.json",
+						".prettierrc.yml",
+						".prettierrc.yaml",
+						".prettierrc.json5",
+						".prettierrc.js",
+						".prettierrc.cjs",
+						".prettierrc.mjs",
+						".prettierrc.toml",
+						"prettier.config.js",
+						"prettier.config.cjs",
+						"prettier.config.mjs",
+					}),
 					prepend_args = {
 						"--single-quote",
 						"true",
@@ -30,8 +45,6 @@ return {
 						"100",
 						"--tab-width",
 						"2",
-						"--end-of-line",
-						"cr",
 					},
 				},
 			},
@@ -41,8 +54,9 @@ return {
 			pattern = "*",
 			callback = function(args)
 				local bufnr = args.buf
-				require("conform").format({ bufnr = bufnr, lsp_fallback = true })
-
+				if vim.g.format_on_save then
+					require("conform").format({ bufnr = bufnr, lsp_fallback = true })
+				end
 				-- -- Ensure final newline at EOF after formatting
 				-- local lines = vim.api.nvim_buf_get_lines(bufnr, -2, -1, false)
 				-- if #lines > 0 and lines[1] ~= "" then
