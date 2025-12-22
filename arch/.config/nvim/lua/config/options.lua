@@ -8,6 +8,7 @@ g.maplocalleader = " "
 opt.clipboard = "unnamedplus"
 opt.swapfile = false
 opt.completeopt = "menuone,noinsert,noselect"
+opt.autoread = true
 
 -- UI
 opt.number = true -- Show line number
