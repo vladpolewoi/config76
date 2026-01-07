@@ -12,6 +12,7 @@ return {
 					"html",
 					"css",
 					"markdown",
+					"vue",
 				},
 				highlight = { enable = true },
 				indent = { enable = true },
