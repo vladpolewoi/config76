@@ -50,6 +50,20 @@ return {
 		-- ESLint with auto-fix on save
 		vim.lsp.config.eslint = vim.tbl_deep_extend("force", vim.lsp.config.eslint, {
 			capabilities = capabilities,
+			filetypes = {
+				"javascript",
+				"javascriptreact",
+				"javascript.jsx",
+				"typescript",
+				"typescriptreact",
+				"typescript.tsx",
+				"vue",
+			},
+			settings = {
+				workingDirectory = { mode = "auto" },
+				format = false,
+				validate = "on",
+			},
 			on_attach = function(client, bufnr)
 				-- Auto-fix on save
 				vim.api.nvim_create_autocmd("BufWritePre", {
