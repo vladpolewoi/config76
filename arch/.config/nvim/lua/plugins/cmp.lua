@@ -1,53 +1,53 @@
 return {
-	"hrsh7th/nvim-cmp",
-	event = "InsertEnter",
-	dependencies = {
-		"hrsh7th/cmp-nvim-lsp", -- LSP source
-		"hrsh7th/cmp-buffer", -- buffer words
-		"hrsh7th/cmp-path", -- file paths
-		"saadparwaiz1/cmp_luasnip", -- snippet completion
-		"L3MON4D3/LuaSnip", -- actual snippet engine
-		"rafamadriz/friendly-snippets", -- a huge snippet collection
-		"onsails/lspkind.nvim", -- formatting
-	},
-	config = function()
-		local cmp = require("cmp")
-		local luasnip = require("luasnip")
-		local lspkind = require("lspkind")
-
-		require("luasnip.loaders.from_vscode").lazy_load()
-
-		cmp.setup({
+	"saghen/blink.cmp",
+	lazy = false,
+	dependencies = "rafamadriz/friendly-snippets",
+	version = "v0.*",
+	opts = {
+		keymap = {
+			preset = "default",
+			["<CR>"] = { "accept", "fallback" },
+			["<C-Space>"] = { "show", "show_documentation", "hide_documentation" },
+			["<C-e>"] = { "hide" },
+			["<C-j>"] = { "select_next", "fallback" },
+			["<C-k>"] = { "select_prev", "fallback" },
+			["<C-u>"] = { "scroll_documentation_up", "fallback" },
+			["<C-d>"] = { "scroll_documentation_down", "fallback" },
+		},
+		appearance = {
+			use_nvim_cmp_as_default = true,
+			nerd_font_variant = "mono",
+		},
+		sources = {
+			default = { "lsp", "path", "snippets", "buffer" },
+		},
+		completion = {
+			accept = {
+				auto_brackets = {
+					enabled = true,
+				},
+			},
+			menu = {
+				border = "rounded",
+				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+			},
+			documentation = {
+				auto_show = true,
+				auto_show_delay_ms = 200,
+				window = {
+					border = "rounded",
+				},
+			},
+			ghost_text = {
+				enabled = true, -- Works great with Supermaven
+			},
+		},
+		signature = {
+			enabled = true,
 			window = {
-				completion = cmp.config.window.bordered(),
-				documentation = cmp.config.window.bordered(),
+				border = "rounded",
 			},
-			formatting = {
-				format = lspkind.cmp_format({
-					mode = "symbol_text",
-					maxwidth = 50,
-					ellipsis_char = "...",
-				}),
-			},
-			snippet = {
-				expand = function(args)
-					luasnip.lsp_expand(args.body)
-				end,
-			},
-			mapping = cmp.mapping.preset.insert({
-				["<CR>"] = cmp.mapping.confirm({ select = true }),
-				["<C-Space>"] = cmp.mapping.complete(),
-				["<C-e>"] = cmp.mapping.abort(),
-				-- ["<CR>"] = cmp.mapping.confirm({ select = false }),
-				["<C-j>"] = cmp.mapping.select_next_item(),
-				["<C-k>"] = cmp.mapping.select_prev_item(),
-			}),
-			sources = cmp.config.sources({
-				{ name = "nvim_lsp" },
-				{ name = "luasnip" },
-				{ name = "buffer" },
-				{ name = "path" },
-			}),
-		})
-	end,
+		},
+	},
+	opts_extend = { "sources.default" },
 }
