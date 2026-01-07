@@ -21,12 +21,7 @@ return {
 			},
 			formatters = {
 				prettier = {
-					prepend_args = {
-						"--single-quote=true",
-						"--semi=true",
-						"--print-width=100",
-						"--tab-width=2",
-					},
+					-- Remove prepend_args - let project .prettierrc handle config
 				},
 			},
 		})

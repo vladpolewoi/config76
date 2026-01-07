@@ -11,8 +11,11 @@ vim.keymap.set("n", "<leader>d", function()
 end, { desc = "Show diagnostic under cursor" })
 
 -- Jump
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
+vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to Declaration" })
 vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to Implementation" })
 vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", { desc = "LSP References" })
+vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, { desc = "Go to Type Definition" })
 
 -- Theme Picker
 vim.keymap.set("n", "<C-t>", function()
