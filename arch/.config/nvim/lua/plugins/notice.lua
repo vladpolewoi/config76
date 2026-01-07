@@ -59,6 +59,8 @@ return {
 				{ filter = { event = "msg_showcmd" }, opts = { skip = true } },
 				-- silence LSP progress completely
 				{ filter = { event = "lsp", kind = "progress" }, opts = { skip = true } },
+				-- hide "No code actions available" notification
+				{ filter = { event = "notify", find = "No code actions available" }, opts = { skip = true } },
 				-- long messages go to split, not as blocking popup
 				{ filter = { event = "msg_show", min_height = 8 }, view = "split" },
 			},

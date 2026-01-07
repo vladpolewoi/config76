@@ -47,12 +47,6 @@ return {
 		})
 		vim.lsp.enable("ts_ls")
 
-		-- Vue Language Server (handles template/CSS/HTML in .vue files)
-		vim.lsp.config.volar = vim.tbl_deep_extend("force", vim.lsp.config.volar, {
-			capabilities = capabilities,
-		})
-		vim.lsp.enable("volar")
-
 		-- ESLint with auto-fix on save
 		vim.lsp.config.eslint = vim.tbl_deep_extend("force", vim.lsp.config.eslint, {
 			capabilities = capabilities,
@@ -66,8 +60,6 @@ return {
 								context = { only = { "source.fixAll.eslint" }, diagnostics = {} },
 								apply = true,
 							})
-							-- Small delay to ensure code actions complete
-							vim.wait(100)
 						end
 					end,
 				})
