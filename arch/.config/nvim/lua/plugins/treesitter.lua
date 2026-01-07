@@ -1,34 +1,49 @@
 return {
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"lua",
-					"typescript",
-					"tsx",
-					"json",
-					"html",
-					"css",
-					"markdown",
-					"vue",
+	"nvim-treesitter/nvim-treesitter",
+	build = ":TSUpdate",
+	config = function()
+		require("nvim-treesitter.configs").setup({
+			ensure_installed = {
+				-- Core languages
+				"lua",
+				"vim",
+				"vimdoc",
+				-- Web development
+				"typescript",
+				"tsx",
+				"javascript",
+				"vue",
+				"html",
+				"css",
+				-- Data formats
+				"json",
+				"yaml",
+				"toml",
+				-- Documentation
+				"markdown",
+				"markdown_inline",
+				-- Systems
+				"rust",
+				"bash",
+				-- Utilities
+				"regex",
+				"gitignore",
+			},
+			highlight = {
+				enable = true,
+				additional_vim_regex_highlighting = false,
+			},
+			indent = { enable = true },
+			-- Incremental selection
+			incremental_selection = {
+				enable = true,
+				keymaps = {
+					init_selection = "<CR>",
+					node_incremental = "<CR>",
+					scope_incremental = "<S-CR>",
+					node_decremental = "<BS>",
 				},
-				highlight = { enable = true },
-				indent = { enable = true },
-				playground = {
-					enable = true,
-					updatetime = 25,
-					persist_queries = false,
-				},
-			})
-		end,
-	},
-	{
-		"nvim-treesitter/playground",
-		cmd = "TSPlaygroundToggle",
-		keys = {
-			{ "<leader>tp", "<cmd>TSPlaygroundToggle<cr>", desc = "Toggle Treesitter Playground" },
-		},
-	},
+			},
+		})
+	end,
 }
