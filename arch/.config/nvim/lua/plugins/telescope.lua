@@ -3,6 +3,10 @@ return {
 	version = "*",
 	dependencies = {
 		"nvim-lua/plenary.nvim", -- required
+		{
+			"nvim-telescope/telescope-fzf-native.nvim",
+			build = "make",
+		},
 	},
 	config = function()
 		require("telescope").setup({
@@ -24,7 +28,17 @@ return {
 				sorting_strategy = "ascending",
 				winblend = 10, -- transparency
 				borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-				file_ignore_patterns = {},
+				file_ignore_patterns = {
+					"node_modules",
+					".git/",
+					"dist/",
+					"build/",
+					"target/",
+					"%.lock",
+					"package%-lock.json",
+					"yarn.lock",
+					"pnpm%-lock.yaml",
+				},
 				mappings = {
 					i = {
 						["<C-j>"] = require("telescope.actions").move_selection_next,
@@ -41,6 +55,9 @@ return {
 				},
 			},
 		})
+
+		-- Load fzf-native extension for faster fuzzy finding
+		require("telescope").load_extension("fzf")
 
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find Files" })
