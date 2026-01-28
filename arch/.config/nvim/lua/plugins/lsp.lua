@@ -47,6 +47,21 @@ return {
 		})
 		vim.lsp.enable("ts_ls")
 
+		-- Vue Language Server (vue_ls, formerly volar)
+		vim.lsp.config.vue_ls = vim.tbl_deep_extend("force", vim.lsp.config.vue_ls, {
+			capabilities = capabilities,
+			filetypes = { "vue" },
+			init_options = {
+				vue = {
+					hybridMode = false,
+				},
+				typescript = {
+					tsdk = vim.fn.stdpath("data") .. "/mason/packages/typescript-language-server/node_modules/typescript/lib",
+				},
+			},
+		})
+		vim.lsp.enable("vue_ls")
+
 		-- ESLint with auto-fix on save
 		vim.lsp.config.eslint = vim.tbl_deep_extend("force", vim.lsp.config.eslint, {
 			capabilities = capabilities,

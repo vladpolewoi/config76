@@ -11,6 +11,6 @@ choices="$(wpctl status 2>/dev/null | \
 picked="$(printf "%s\n" "$choices" | wofi --dmenu --prompt "Audio output")"
 [ -z "$picked" ] && exit 0
 
-id="$(printf "%s" "$picked" | cut -f1)"
+id="$(printf "%s" "$picked" | awk '{print $1}')"
 wpctl set-default "$id"
 

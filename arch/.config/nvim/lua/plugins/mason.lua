@@ -19,7 +19,8 @@ return {
 			-- Auto-install these LSP servers
 			ensure_installed = {
 				"lua_ls", -- Lua
-				"ts_ls", -- TypeScript/JavaScript (with Vue plugin)
+				"ts_ls", -- TypeScript/JavaScript
+				"vue_ls", -- Vue Language Server (formerly volar)
 				"eslint", -- ESLint
 				"rust_analyzer", -- Rust
 				"tailwindcss", -- Tailwind CSS

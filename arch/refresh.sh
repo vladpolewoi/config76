@@ -15,4 +15,8 @@ setsid waybar >/dev/null 2>&1 < /dev/null &
 pkill swaync
 swaync >/dev/null 2>&1 < /dev/null &
 
+# Restart Slideshow
+pkill -f slideshow.sh
+setsid "$HOME/config76/arch/scripts/slideshow.sh" >/dev/null 2>&1 < /dev/null &
+
 

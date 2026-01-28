@@ -3,7 +3,7 @@
 WALLPAPER_DIR="$HOME/config76/arch/wallpaper"
 MONITOR=""
 
-# Ensure hyprpaper is running (optional)
+# Ensure hyprpaper is running
 pgrep -x hyprpaper &>/dev/null || hyprpaper &
 
 # Build a map of name → full path
@@ -18,8 +18,12 @@ CHOSEN=$(printf "%s\n" "${!WALL_MAP[@]}" | sort | wofi --dmenu --prompt "Choose 
 
 # Apply selected wallpaper
 if [[ -n "$CHOSEN" && -f "${WALL_MAP[$CHOSEN]}" ]]; then
-  hyprctl hyprpaper reload , "${WALL_MAP[$CHOSEN]}"
-  # hyprctl hyprpaper preload "${WALL_MAP[$CHOSEN]}"
-  # hyprctl hyprpaper wallpaper "$MONITOR,${WALL_MAP[$CHOSEN]}"
+  WALL_PATH="${WALL_MAP[$CHOSEN]}"
+
+  # Preload the chosen wallpaper
+  hyprctl hyprpaper preload "$WALL_PATH"
+
+  # Set as wallpaper
+  hyprctl hyprpaper wallpaper "$MONITOR,$WALL_PATH"
 fi
 
