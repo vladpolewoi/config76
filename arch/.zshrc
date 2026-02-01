@@ -6,6 +6,9 @@ source $ZSH/oh-my-zsh.sh
 # Custom aliases
 alias ll="ls -la"
 
+# Deploy commands
+alias deploy-calendar="/home/user76/config76/arch/jobs/deploy-calendar.sh"
+
 # bun completions
 [ -s "/home/user76/.bun/_bun" ] && source "/home/user76/.bun/_bun"
 
