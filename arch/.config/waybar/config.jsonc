@@ -34,8 +34,8 @@
   "pulseaudio": {
     "tooltip": false,
     "scroll-step": 5,
-    "format": "{icon} {volume}%",
-    "format-muted": "{icon} {volume}%",
+    "format": "{icon} {volume}%",
+    "format-muted": "{icon} {volume}%",
 
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "format-icons": {
@@ -45,12 +45,12 @@
 
   "network": {
     "tooltip": false,
-    "format-wifi": "  {essid}",
+    "format-wifi": "  {essid}",
     "format-ethernet": "",
   },
 
   "clock#time": {
-    "format": "<span></span> {:%H:%M}",
+    "format": "<span></span> {:%H:%M}",
     "tooltip": false,
     "interval": 60,
   },
@@ -64,7 +64,7 @@
   },
 
   "clock#date": {
-    "format": "<span> </span>{:%d %a, %B}",
+    "format": "<span></span> {:%d %a, %B}",
     "interval": 60,
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "calendar": {
@@ -84,13 +84,13 @@
 
   "cpu": {
     "interval": 15,
-    "format": " {}%",
+    "format": " {}%",
     "max-length": 10,
   },
 
   "memory": {
     "interval": 30,
-    "format": " {}%",
+    "format": " {}%",
     "max-length": 10,
   },
 }

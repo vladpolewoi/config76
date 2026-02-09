@@ -3,7 +3,7 @@
 set -e
 
 echo "🔧 Installing Bluetooth packages..."
-sudo pacman -S --needed --noconfirm bluez bluez-utils 
+sudo pacman -S --needed --noconfirm bluez bluez-utils blueman
 
 echo "🚀 Enabling and starting bluetooth.service..."
 sudo systemctl enable --now bluetooth.service

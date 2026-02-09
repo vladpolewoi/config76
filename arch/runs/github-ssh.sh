@@ -4,6 +4,12 @@ set -e
 
 sudo pacman -S --noconfirm openssh
 
+# Copy SSH config
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+mkdir -p "$HOME/.ssh"
+cp "$script_dir/../.ssh/config" "$HOME/.ssh/config"
+chmod 600 "$HOME/.ssh/config"
+
 KEY_COMMENT="vlad.polewoi1@gmail.com"
 KEY_FILE="$HOME/.ssh/id_ed25519"
 

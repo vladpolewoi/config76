@@ -1,156 +1,92 @@
-# Task Workflow Command
+# Task Workflow
 
-You are executing a structured development workflow. Follow these stages exactly.
-
-**Input:** $ARGUMENTS (path to screenshot or task description)
+**Input:** $ARGUMENTS (task description, screenshot, or Jira ID)
 
 ---
 
-## STAGE 1: ANALYZE
+## How it works
 
-1. Read the screenshot/task description provided
-2. Understand what needs to be done (feature, bug fix, refactor, etc.)
-3. Identify which files likely need changes
-4. Create a clear plan with numbered steps
+This is a lightweight, iterative workflow. No rigid stages — just do the work, ask before external actions, and keep moving.
 
-**Output to user:**
-```
-📋 TASK ANALYSIS
-================
-Type: [Feature / Bug Fix / Refactor / etc.]
-Summary: [One line description]
+### 1. Understand
 
-Plan:
-1. [Step 1]
-2. [Step 2]
-...
+- Read the task input (screenshot, description, API spec, etc.)
+- Explore relevant code — check existing patterns, architecture docs if available
+- If on a feature branch already, continue there. Otherwise create one:
+  - `feature/<short>`, `fix/<short>`, or `refactor/<short>`
+- **For bug fixes:** reproduce first with Playwright before changing code
+- **Skip formal planning** unless the task is ambiguous. If unclear, ask the user directly — don't write a plan document.
 
-Files to modify:
-- [file1]
-- [file2]
-```
+### 2. Implement
 
-Ask: "Does this plan look correct? Should I proceed with implementation?"
+- Follow existing codebase patterns (check architecture docs, existing code style)
+- Run lint after changes: `npx eslint <changed-files>`
+- Fix lint/type errors as you go, don't batch them
+- **No progress files** — the conversation is the progress tracker
 
-Wait for user confirmation before proceeding.
+### 3. Test
 
----
+- Start dev server if not running (`npm run dev` in background)
+- Use Playwright to verify changes work
+- Test edge cases when the user asks or when they're obvious
+- Handle iterative UI feedback naturally (user may send design screenshots, color values, spacing adjustments mid-flow)
 
-## STAGE 2: IMPLEMENT
+### 4. Build check
 
-1. Create a new branch from current branch:
-   - For features: `feature/<short-description>`
-   - For bugs: `fix/<short-description>`
-   - For refactors: `refactor/<short-description>`
+- Run `npx tsc --noEmit` and `npm run build` before committing
+- Fix any errors
 
-2. Implement the changes according to the plan
+### 5. Commit & PR
 
-3. After implementation, run:
-   - `npm run lint` (or project's lint command)
-   - `npm run build` (or project's build command)
+**Always ask before committing/pushing.**
 
-4. Fix any lint/build errors
+When user says to commit:
+- Use **gitmoji** format: `:sparkles:`, `:bug:`, `:lipstick:`, `:recycle:`, `:wrench:`, etc.
+- Keep commit messages **short** (one line unless user asks for more)
+- Split commits by concern if user asks (e.g. config / style / feature)
+- **No AI signatures**, no Co-Authored-By
 
-**Output to user:**
-```
-✅ IMPLEMENTATION COMPLETE
-==========================
-Branch: [branch-name]
-Changes:
-- [file1]: [what changed]
-- [file2]: [what changed]
-
-Lint: ✅ Pass
-Build: ✅ Pass
-```
-
-Ask: "Implementation complete. Ready for testing?"
+When user says to create PR:
+- Read `.github/PULL_REQUEST_TEMPLATE.md` and use that format
+- Keep PR description concise — bullet points, not essays
+- Use `gh pr create --base stage --assignee @me` (or update existing with `gh pr edit`)
+- If PR already exists, update it instead of failing
 
 ---
 
-## STAGE 3: TEST
+## Rules
 
-1. Start the dev server if not running
-2. Use Playwright browser tools to:
-   - Navigate to the relevant page/feature
-   - Show the user what was changed
-
-**Output to user:**
-```
-🧪 TESTING
-==========
-Browser opened at: [URL]
-Please verify:
-- [ ] [What to check 1]
-- [ ] [What to check 2]
-```
-
-Ask: "Does the feature/fix work as expected? (yes/no/issues)"
-
-If issues: Go back to Stage 2 to fix
-If yes: Proceed to Stage 4
-
----
-
-## STAGE 4: PR PREPARATION
-
-1. Prepare commit message using gitmoji format:
-   - `:sparkles:` for new features
-   - `:bug:` for bug fixes
-   - `:recycle:` for refactors
-   - `:lipstick:` for UI changes
-   - `:zap:` for performance
-   - `:memo:` for docs
-
-2. Show user everything BEFORE creating:
-
-**Output to user:**
-```
-📝 PR PREPARATION
-=================
-Branch: [branch-name]
-Commit message: [gitmoji message]
-
-PR Title: [title]
-PR Description:
-[description]
-
-Changed files:
-- [file1]
-- [file2]
-```
-
-Ask: "Review the above. Should I create the commit and PR? (yes/edit/cancel)"
-
-If yes:
-- Create commit (NO AI signature, NO Co-Authored-By)
-- Push branch
-- Create PR using `gh pr create`
-
-If edit: Ask what to change, then show again
-
----
-
-## IMPORTANT RULES
-
-- **NO AI SIGNATURES**: Do not add "Generated with Claude Code" or "Co-Authored-By: Claude" to commits
-- **GITMOJI FORMAT**: Always use gitmoji in commit messages (`:emoji: message`)
-- **HUMAN-LIKE**: All commits and PRs should look like human work
-- Use TodoWrite to track progress through stages
-
-## EXTERNAL ACTIONS - ALWAYS ASK FIRST
-
-**NEVER perform these actions without explicit user approval:**
+### Always ask first
 - Creating/pushing commits
-- Creating/updating pull requests
-- Pushing to remote repositories
-- Updating task status on any platform
-- Sending messages or notifications anywhere
-- Any action that affects external systems or is visible to others
+- Creating/updating PRs
+- Pushing to remote
+- Updating task boards or external systems
+- Any action visible to others
 
-**Local actions that are OK without asking:**
-- Reading files
-- Editing local files
+### Never ask, just do
+- Reading/editing local files
 - Creating local branches
-- Running local builds/tests
-- Opening browser for local testing
+- Running builds/tests/lint
+- Opening browser for testing
+- Exploring codebase
+
+### Code style
+- Follow existing patterns in the codebase
+- No over-engineering — only what's needed
+- Use theme tokens, not hardcoded values
+- Success notifications in thunks, not components (if Redux)
+- Fire-and-forget dispatch pattern (if that's what the project uses)
+
+### Gitmoji reference
+| Emoji | Use |
+|-------|-----|
+| `:sparkles:` | New feature |
+| `:bug:` | Bug fix |
+| `:lipstick:` | UI/style |
+| `:recycle:` | Refactor |
+| `:wrench:` | Config |
+| `:arrow_up:` | Upgrade deps |
+| `:memo:` | Docs |
+| `:zap:` | Performance |
+| `:fire:` | Remove code |
+| `:truck:` | Move/rename |

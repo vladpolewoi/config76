@@ -67,7 +67,10 @@ copy_dir .local $HOME/.local
 copy_dir .claude $HOME/.claude
 copy_file .zshrc $HOME
 copy_file .zprofile $HOME
-# copy_dir .local $HOME/.local 
+copy_file .ssh/config $HOME/.ssh
+copy_file CLAUDE.md $HOME
+copy_file claude-models.sh $HOME/.claude
+# copy_dir .local $HOME/.local
 # copy_file .specialconfig $HOME
 # copy_file .ready-tmux $HOME
 
