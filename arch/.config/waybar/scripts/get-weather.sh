@@ -1,8 +1,11 @@
-
 #!/bin/bash
 
-# Set URL and cache
-URL="https://wttr.in/?format=j1"
+# Open-Meteo API (free, no key needed)
+# Chisinau, Moldova
+LAT="47.0105"
+LON="28.8638"
+URL="https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,apparent_temperature,weather_code&timezone=auto"
+
 CACHE_DIR="$HOME/.cache/weather"
 CACHE_FILE="$CACHE_DIR/weather.json"
 CACHE_LIFETIME=600  # 10 minutes
@@ -12,13 +15,13 @@ mkdir -p "$CACHE_DIR"
 update_cache() {
   local data
   data=$(curl -s --max-time 5 "$URL")
-  if [[ $(echo "$data" | jq -r '.current_condition[0].weatherCode' 2>/dev/null) != "null" ]]; then
+  if [[ $(echo "$data" | jq -r '.current.weather_code' 2>/dev/null) != "null" ]]; then
     echo "$data" > "$CACHE_FILE"
   fi
 }
 
 # Use cache if fresh
-if [[ -f "$CACHE_FILE" ]]; then
+if [[ -f "$CACHE_FILE" && -s "$CACHE_FILE" ]]; then
   last_update=$(date -r "$CACHE_FILE" +%s)
   now=$(date +%s)
   age=$((now - last_update))
@@ -30,52 +33,69 @@ else
 fi
 
 # If no valid cache, fallback
-if [[ ! -f "$CACHE_FILE" ]]; then
-  echo " Loading..."
+if [[ ! -f "$CACHE_FILE" || ! -s "$CACHE_FILE" ]]; then
+  echo " Loading..."
   exit 0
 fi
 
 # Read from cache
 WEATHER_JSON=$(cat "$CACHE_FILE")
 
-WWO_CODE=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].weatherCode')
-TEMP=$(echo "$WEATHER_JSON" | jq -r '.current_condition[0].FeelsLikeC')
+WMO_CODE=$(echo "$WEATHER_JSON" | jq -r '.current.weather_code')
+TEMP=$(echo "$WEATHER_JSON" | jq -r '.current.apparent_temperature' | xargs printf "%.0f")
 
 # Safety fallback
-if [[ "$WWO_CODE" == "null" || -z "$WWO_CODE" ]]; then
-  echo " Loading..."
+if [[ "$WMO_CODE" == "null" || -z "$WMO_CODE" ]]; then
+  echo " Loading..."
   exit 0
 fi
 
-# Mappings
-declare -A WWO_CODE_MAP=(
-  ["113"]="Sunny" ["116"]="PartlyCloudy" ["119"]="Cloudy" ["122"]="VeryCloudy" ["143"]="Fog"
-  ["176"]="LightShowers" ["179"]="LightSleetShowers" ["182"]="LightSleet" ["185"]="LightSleet"
-  ["200"]="ThunderyShowers" ["227"]="LightSnow" ["230"]="HeavySnow" ["248"]="Fog" ["260"]="Fog"
-  ["263"]="LightShowers" ["266"]="LightRain" ["281"]="LightSleet" ["284"]="LightSleet"
-  ["293"]="LightRain" ["296"]="LightRain" ["299"]="HeavyShowers" ["302"]="HeavyRain"
-  ["305"]="HeavyShowers" ["308"]="HeavyRain" ["311"]="LightSleet" ["314"]="LightSleet"
-  ["317"]="LightSleet" ["320"]="LightSnow" ["323"]="LightSnowShowers" ["326"]="LightSnowShowers"
-  ["329"]="HeavySnow" ["332"]="HeavySnow" ["335"]="HeavySnowShowers" ["338"]="HeavySnow"
-  ["350"]="LightSleet" ["353"]="LightShowers" ["356"]="HeavyShowers" ["359"]="HeavyRain"
-  ["362"]="LightSleetShowers" ["365"]="LightSleetShowers" ["368"]="LightSnowShowers"
-  ["371"]="HeavySnowShowers" ["374"]="LightSleetShowers" ["377"]="LightSleet"
-  ["386"]="ThunderyShowers" ["389"]="ThunderyHeavyRain" ["392"]="ThunderySnowShowers"
-  ["395"]="HeavySnowShowers"
-)
+# WMO weather code to condition name
+get_condition() {
+  case $1 in
+    0)       echo "clear" ;;
+    1)       echo "mostly_clear" ;;
+    2)       echo "partly_cloudy" ;;
+    3)       echo "overcast" ;;
+    45|48)   echo "fog" ;;
+    51|53|55) echo "drizzle" ;;
+    56|57)   echo "freezing_drizzle" ;;
+    61|63)   echo "rain" ;;
+    65)      echo "heavy_rain" ;;
+    66|67)   echo "freezing_rain" ;;
+    71|73)   echo "snow" ;;
+    75|77)   echo "heavy_snow" ;;
+    80|81)   echo "rain_showers" ;;
+    82)      echo "heavy_showers" ;;
+    85|86)   echo "snow_showers" ;;
+    95)      echo "thunderstorm" ;;
+    96|99)   echo "thunderstorm_hail" ;;
+    *)       echo "unknown" ;;
+  esac
+}
 
-declare -A WEATHER_SYMBOL=(
-  ["Unknown"]="✨" ["Cloudy"]="" ["Fog"]="" ["HeavyRain"]="" ["HeavyShowers"]=""
-  ["HeavySnow"]="" ["HeavySnowShowers"]="" ["LightRain"]="" ["LightShowers"]=""
-  ["LightSleet"]="" ["LightSleetShowers"]="" ["LightSnow"]="" ["LightSnowShowers"]=""
-  ["PartlyCloudy"]="󰖕" ["Sunny"]="" ["ThunderyHeavyRain"]="" ["ThunderyShowers"]=""
-  ["ThunderySnowShowers"]="" ["VeryCloudy"]=""
-)
+CONDITION=$(get_condition "$WMO_CODE")
 
-# Find condition
-CONDITION=${WWO_CODE_MAP[$WWO_CODE]:-Unknown}
-ICON=${WEATHER_SYMBOL[$CONDITION]:-"✨"}
+# Nerd Font icons via printf to preserve glyphs
+case "$CONDITION" in
+  clear)             ICON=$'\ue30d' ;;
+  mostly_clear)      ICON=$'\ue30d' ;;
+  partly_cloudy)     ICON=$'\ue302' ;;
+  overcast)          ICON=$'\ue312' ;;
+  fog)               ICON=$'\ue313' ;;
+  drizzle)           ICON=$'\ue319' ;;
+  freezing_drizzle)  ICON=$'\ue318' ;;
+  rain)              ICON=$'\ue318' ;;
+  heavy_rain)        ICON=$'\ue318' ;;
+  freezing_rain)     ICON=$'\ue318' ;;
+  snow)              ICON=$'\ue31a' ;;
+  heavy_snow)        ICON=$'\ue31a' ;;
+  rain_showers)      ICON=$'\ue319' ;;
+  heavy_showers)     ICON=$'\ue318' ;;
+  snow_showers)      ICON=$'\ue31a' ;;
+  thunderstorm)      ICON=$'\ue31d' ;;
+  thunderstorm_hail) ICON=$'\ue31d' ;;
+  *)                 ICON=$'\ue37e' ;;
+esac
 
-# Output
-echo "$ICON ${TEMP}°C"
-
+echo "$ICON  ${TEMP}°C"

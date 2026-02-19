@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Pencil
+Comment=Design tool with full canvas power
+Exec=/home/user76/.local/bin/pencil
+Icon=/home/user76/.local/share/icons/pencil.png
+Type=Application
+Categories=Graphics;Design;

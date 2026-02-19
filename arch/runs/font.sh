@@ -2,7 +2,12 @@
 
 set -e
 
-sudo pacman -S --noconfirm unzip noto-fonts-emoji
+deps=()
+pacman -Q unzip &>/dev/null || deps+=(unzip)
+pacman -Q noto-fonts-emoji &>/dev/null || deps+=(noto-fonts-emoji)
+if [ ${#deps[@]} -gt 0 ]; then
+  sudo pacman -S --noconfirm "${deps[@]}"
+fi
 
 FONT_DIR="$HOME/.local/share/fonts"
 TMP_DIR=$(mktemp -d)
@@ -13,11 +18,11 @@ cd "$TMP_DIR"
 
 echo "🔤 Installing JetBrainsMono Nerd Font from GitHub..."
 curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-unzip JetBrainsMono.zip -d "$FONT_DIR"
+unzip -o JetBrainsMono.zip -d "$FONT_DIR"
 
 echo "🔤 Installing Hack Nerd Font from GitHub..."
 curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
-unzip -q Hack.zip -d "$FONT_DIR"
+unzip -oq Hack.zip -d "$FONT_DIR"
 
 GFONTS="https://raw.githubusercontent.com/google/fonts/main/ofl"
 

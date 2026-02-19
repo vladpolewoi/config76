@@ -32,14 +32,11 @@ OPUS 4.6 ($CLAUDE_OPUS)
 
 === TOKEN PROTECTION ===
 • Before 3+ parallel agents → ASK FOR CONFIRMATION
-• Parallel work → DEFAULT TO HAIKU
 • Expensive tasks → USE SEQUENTIAL or GATES
 • Complex work → USE OPUS
 
 === ANTI-PATTERNS ===
 ✗ Don't spawn 20+ agents without confirmation
-✗ Don't use Opus for simple parallel batch work
 ✗ Don't use Haiku for critical architecture decisions
 ✓ Ask user before draining tokens
-✓ Use Haiku first, escalate to Opus if needed
 EOF

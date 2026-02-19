@@ -43,11 +43,13 @@ This is a lightweight, iterative workflow. No rigid stages — just do the work,
 When user says to commit:
 - Use **gitmoji** format: `:sparkles:`, `:bug:`, `:lipstick:`, `:recycle:`, `:wrench:`, etc.
 - Keep commit messages **short** (one line unless user asks for more)
+- Include task ID in commit message when available (e.g. `Fix crash in guest search (KLNA-442)`)
 - Split commits by concern if user asks (e.g. config / style / feature)
 - **No AI signatures**, no Co-Authored-By
 
 When user says to create PR:
 - Read `.github/PULL_REQUEST_TEMPLATE.md` and use that format
+- If a task URL was provided in input, use it as the task link in PR body: `[TASK-ID](url)`
 - Keep PR description concise — bullet points, not essays
 - Use `gh pr create --base stage --assignee @me` (or update existing with `gh pr edit`)
 - If PR already exists, update it instead of failing

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-echo $script_dir
 
 filter=""
 dry="0"
@@ -37,40 +36,37 @@ execute() {
 
 log "-#@ dev @#-"
 
+# Merge source dir into target (overlay — overwrites matching files, preserves the rest)
 copy_dir() {
-  from=$1
-  to=$2
+  local from=$1
+  local to=$2
 
-  pushd "$from" > /dev/null 
-  dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
+  pushd "$from" > /dev/null
+  local dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
   for dir in $dirs; do
-	  if [ -d "$to/$dir" ]; then
-	  	execute rm -rf "$to/$dir"
-	  fi
-	  execute cp -r "$dir" "$to/$dir"
+    local name="${dir#./}"
+    execute mkdir -p "$to/$name"
+    execute cp -rf "$name/." "$to/$name/"
   done
-  popd > /dev/null 
+  popd > /dev/null
 }
 
 copy_file() {
-  from=$1
-  to=$2
-  name=$(basename $from)
+  local from=$1
+  local to=$2
 
-  execute rm "$to/$name"
-  execute cp "$from" "$to/$name"
+  execute mkdir -p "$to"
+  execute cp -f "$from" "$to/"
 }
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-copy_dir .config $XDG_CONFIG_HOME
-copy_dir .local $HOME/.local
-copy_dir .claude $HOME/.claude
-copy_file .zshrc $HOME
-copy_file .zprofile $HOME
-copy_file .ssh/config $HOME/.ssh
-copy_file CLAUDE.md $HOME
-copy_file claude-models.sh $HOME/.claude
-# copy_dir .local $HOME/.local
-# copy_file .specialconfig $HOME
-# copy_file .ready-tmux $HOME
+copy_dir "$script_dir/.config" "$XDG_CONFIG_HOME"
+copy_dir "$script_dir/.local" "$HOME/.local"
+copy_dir "$script_dir/.claude" "$HOME/.claude"
+copy_file "$script_dir/.zshrc" "$HOME"
+copy_file "$script_dir/.zprofile" "$HOME"
+copy_file "$script_dir/.ssh/config" "$HOME/.ssh"
+copy_file "$script_dir/CLAUDE.md" "$HOME"
+copy_file "$script_dir/claude-models.sh" "$HOME/.claude"
+copy_file "$script_dir/.claude/mcp.json" "$HOME/.claude"
 
