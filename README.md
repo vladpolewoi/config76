@@ -36,17 +36,6 @@ Some configs depend on machine-specific values that are never committed.
 Each platform has a `secrets.env.example` — copy it to `secrets.env` and fill in real values.
 `secrets.env` is gitignored.
 
-### mac/secrets.env
-
-| Variable | Description |
-|---|---|
-| `NODE_AUTH_TOKEN` | GitHub PAT with `read:packages` scope |
-
-```bash
-cp mac/secrets.env.example mac/secrets.env
-# edit with real values
-```
-
 ### arch/secrets.env
 
 | Variable | Description |
