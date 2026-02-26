@@ -1,0 +1,18 @@
+# ── Taps ────────────────────────────────────────────────────────────────────
+tap "koekeishiya/formulae"
+
+# ── CLI tools ────────────────────────────────────────────────────────────────
+brew "gum"          # glamorous shell scripts
+brew "neovim"       # editor
+brew "tmux"         # terminal multiplexer
+brew "fzf"          # fuzzy finder (required by fzf-tab)
+brew "git"          # version control
+brew "yabai"        # tiling window manager
+brew "skhd"         # hotkey daemon for yabai
+
+# ── Apps ─────────────────────────────────────────────────────────────────────
+cask "ghostty"      # terminal
+cask "arc"          # browser
+
+# ── Fonts ─────────────────────────────────────────────────────────────────────
+cask "font-jetbrains-mono-nerd-font"

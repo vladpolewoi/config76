@@ -33,6 +33,12 @@ collect_scripts() {
   done < <(find "$dir" -maxdepth 1 -type f \( -name '*.sh' -o ! -name '*.*' \) | sort)
 }
 
+# Add env.sh first
+if [[ -f "$SCRIPT_DIR/env.sh" ]]; then
+  LABELS+=("env")
+  PATHS+=("$SCRIPT_DIR/env.sh")
+fi
+
 collect_scripts "$SCRIPT_DIR/runs"
 
 if [[ ${#LABELS[@]} -eq 0 ]]; then
@@ -53,6 +59,7 @@ gum style \
 
 # ── Mode selection ──
 MODE=$(gum choose \
+  "Brew bundle (install all tools at once)" \
   "Select scripts to install" \
   "Install ALL scripts" \
   --header "What do you want to do?")
@@ -84,6 +91,11 @@ run_script() {
 }
 
 case "$MODE" in
+  "Brew bundle (install all tools at once)")
+    gum confirm "Run brew bundle from mac/Brewfile?" || exit 0
+    brew bundle --file="$SCRIPT_DIR/Brewfile"
+    ;;
+
   "Select scripts to install")
     SELECTED=$(gum choose --no-limit --header "Select scripts to run:" "${LABELS[@]}")
 
