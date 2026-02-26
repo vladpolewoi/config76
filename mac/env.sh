@@ -4,82 +4,178 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-dry="0"
+DRY=0
+[[ "${1}" == "--dry" ]] && DRY=1
 
-while [[ $# > 0 ]]; do
-  [[ $1 == "--dry" ]] && dry="1"
-  shift
-done
+# ─── Helpers ────────────────────────────────────────────────────────────────
 
-log() {
-  [[ $dry == "1" ]] && echo "[DRY_RUN]: $@" || echo "$@"
+info() { gum log --level info  "$@"; }
+warn() { gum log --level warn  "$@"; }
+skip() { gum log --level debug "$@"; }
+
+run() {
+  if [[ $DRY -eq 1 ]]; then
+    gum log --level debug "dry:" cmd "$*"
+  else
+    "$@"
+  fi
 }
 
-execute() {
-  log "  $@"
-  [[ $dry == "1" ]] && return
-  "$@"
+section() {
+  echo ""
+  gum style --foreground 99 --bold "$1"
 }
 
-# Symlink a directory into target (e.g. .config/nvim → repo/.config/nvim)
-link_dir() {
+# Symlink a single directory.
+# If a real dir already exists at target it is backed up first.
+# If a symlink already exists it is updated.
+symlink_dir() {
   local from="$1"
   local to="$2"
 
   [[ -d "$from" ]] || return 0
 
-  for dir in "$from"/*/; do
-    [[ -d "$dir" ]] || continue
-    local name="$(basename "$dir")"
-    local target="$to/$name"
+  run mkdir -p "$(dirname "$to")"
 
-    if [[ -L "$target" ]]; then
-      execute rm "$target"
-    elif [[ -d "$target" ]]; then
-      execute rm -rf "$target"
-    fi
-
-    execute ln -s "$dir" "$target"
-  done
+  if [[ -L "$to" ]]; then
+    run ln -sfn "$from" "$to"
+    info "Updated symlink" path "$(basename "$to")"
+  elif [[ -d "$to" ]]; then
+    run mv "$to" "${to}.backup"
+    warn "Backed up existing dir" path "$(basename "$to").backup"
+    run ln -sfn "$from" "$to"
+    info "Symlinked" path "$(basename "$to")"
+  else
+    run ln -sfn "$from" "$to"
+    info "Symlinked" path "$(basename "$to")"
+  fi
 }
 
-# Symlink a single file
-link_file() {
+# Symlink each immediate subdirectory inside a parent dir.
+# e.g. symlink_subdirs repo/.config ~/.config
+#   → repo/.config/nvim  → ~/.config/nvim
+#   → repo/.config/tmux  → ~/.config/tmux
+symlink_subdirs() {
   local from="$1"
   local to="$2"
 
-  [[ -f "$from" ]] || return 0
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
 
-  local dir="$(dirname "$to")"
-  execute mkdir -p "$dir"
-
-  if [[ -L "$to" ]]; then
-    execute rm "$to"
-  elif [[ -f "$to" ]]; then
-    execute mv "$to" "$to.backup"
-  fi
-
-  execute ln -s "$from" "$to"
+  for dir in "$from"/*/; do
+    [[ -d "$dir" ]] || continue
+    symlink_dir "$dir" "$to/$(basename "$dir")"
+  done
 }
 
-log "═══ config76 mac env ═══"
+# Symlink individual scripts into ~/.local/scripts.
+# Skips scripts that already exist as real files (machine-owned).
+# Only adds scripts that are missing or already symlinks.
+install_scripts() {
+  local from="$1"
+  local to="$2"
 
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-execute mkdir -p "$XDG_CONFIG_HOME"
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
 
-# ── Shared configs (nvim, tmux, ghostty) ──
-log ""
-log ">> Shared configs"
-link_dir "$ROOT_DIR/.config" "$XDG_CONFIG_HOME"
-link_dir "$ROOT_DIR/.local" "$HOME/.local"
-link_file "$ROOT_DIR/.zshrc" "$HOME/.zshrc"
+  for script in "$from"/*; do
+    [[ -f "$script" ]] || continue
+    local name="$(basename "$script")"
+    local target="$to/$name"
 
-# ── Mac-specific configs (yabai, skhd) ──
-log ""
-log ">> Mac configs"
-link_dir "$SCRIPT_DIR/.config" "$XDG_CONFIG_HOME"
-link_dir "$SCRIPT_DIR/.claude" "$HOME/.claude"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+      skip "Skipped (machine-owned)" name "$name"
+    else
+      run ln -sf "$script" "$target"
+      run chmod +x "$target"
+      info "Installed script" name "$name"
+    fi
+  done
+}
 
-log ""
-log "done"
+# Inject a source line at the top of ~/.zshrc without overwriting it.
+# Safe to run multiple times — skips if marker is already present.
+# On a fresh machine (no .zshrc) it creates one.
+setup_zshrc() {
+  local base="$ROOT_DIR/.zshrc"
+  local target="$HOME/.zshrc"
+  local marker="# config76:base"
+  local source_line="source \"$base\"  $marker"
+
+  [[ -f "$base" ]] || { warn "No base .zshrc in repo, skipping"; return; }
+
+  if [[ ! -f "$target" ]]; then
+    run bash -c "printf '%s\n' '$source_line' '' > '$target'"
+    info "Created ~/.zshrc with source line"
+  elif grep -qF "$marker" "$target"; then
+    skip "~/.zshrc already has source line, skipping"
+  else
+    # Prepend to existing .zshrc — machine-specific content stays below
+    local tmp
+    tmp="$(mktemp)"
+    printf '%s\n\n' "$source_line" > "$tmp"
+    cat "$target" >> "$tmp"
+    run mv "$tmp" "$target"
+    info "Injected source line into ~/.zshrc"
+    warn "Review ~/.zshrc — shared items now loaded via source, you can remove duplicates below"
+  fi
+}
+
+# Symlink individual JSON files in .claude (settings.json etc).
+# Skips mcp.json — that is handled separately by runs/claude.sh via merge.
+setup_claude() {
+  local from="$1"
+  local to="$HOME/.claude"
+
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
+
+  for file in "$from"/*.json; do
+    [[ -f "$file" ]] || continue
+    local name="$(basename "$file")"
+
+    # mcp.json is merged into ~/.claude.json by runs/claude.sh, skip here
+    [[ "$name" == "mcp.json" ]] && continue
+
+    local target="$to/$name"
+
+    if [[ -f "$target" && ! -L "$target" ]]; then
+      run mv "$target" "${target}.backup"
+      warn "Backed up existing" name "$name"
+    fi
+
+    run ln -sf "$file" "$target"
+    info "Symlinked" name "$name"
+  done
+}
+
+# ─── Main ───────────────────────────────────────────────────────────────────
+
+gum style \
+  --foreground 212 --border-foreground 212 --border double \
+  --align center --width 44 --margin "1 0" \
+  "config76 — mac env"
+
+[[ $DRY -eq 1 ]] && warn "Dry run — no changes will be made"
+
+mkdir -p "$XDG_CONFIG_HOME"
+
+section "Shared configs (nvim, tmux, ghostty...)"
+symlink_subdirs "$ROOT_DIR/.config" "$XDG_CONFIG_HOME"
+
+section "Shared scripts"
+install_scripts "$ROOT_DIR/.local/scripts" "$HOME/.local/scripts"
+
+section "Shell (.zshrc)"
+setup_zshrc
+
+section "Mac configs (yabai, skhd)"
+symlink_subdirs "$SCRIPT_DIR/.config" "$XDG_CONFIG_HOME"
+
+section "Claude settings"
+setup_claude "$SCRIPT_DIR/.claude"
+
+echo ""
+gum style --foreground 82 --bold "  Done!"
