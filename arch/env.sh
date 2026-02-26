@@ -1,84 +1,192 @@
 #!/usr/bin/env bash
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+set -e
 
-filter=""
-dry="0"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# Parse arguments
-while [[ $# > 0 ]]; do
-  if [[ $1 == "--dry" ]]; then
-    dry="1"
+DRY=0
+[[ "${1}" == "--dry" ]] && DRY=1
+
+# ─── Helpers ────────────────────────────────────────────────────────────────
+
+info() { gum log --level info  "$@"; }
+warn() { gum log --level warn  "$@"; }
+skip() { gum log --level debug "$@"; }
+
+run() {
+  if [[ $DRY -eq 1 ]]; then
+    gum log --level debug "dry:" cmd "$*"
   else
-    filter="$1"
-  fi
-  shift
-done
-
-# Log with prefix
-log() {
-  if [[ $dry == "1" ]]; then
-    echo "[DRY_RUN]: $@"
-  else
-    echo "$@"
+    "$@"
   fi
 }
 
-# Execute with dry-run check and logging
-execute() {
-  log "execute $@"
+section() {
+  echo ""
+  gum style --foreground 99 --bold "$1"
+}
 
-  if [[ $dry == "1" ]]; then
+# Symlink a single directory, backing up any existing real dir.
+symlink_dir() {
+  local from="$1"
+  local to="$2"
+
+  [[ -d "$from" ]] || return 0
+
+  run mkdir -p "$(dirname "$to")"
+
+  if [[ -L "$to" ]]; then
+    run ln -sfn "$from" "$to"
+    info "Updated symlink" path "$(basename "$to")"
+  elif [[ -d "$to" ]]; then
+    run mv "$to" "${to}.backup"
+    warn "Backed up existing dir" path "$(basename "$to").backup"
+    run ln -sfn "$from" "$to"
+    info "Symlinked" path "$(basename "$to")"
+  else
+    run ln -sfn "$from" "$to"
+    info "Symlinked" path "$(basename "$to")"
+  fi
+}
+
+# Symlink each immediate subdirectory of a parent into another parent.
+symlink_subdirs() {
+  local from="$1"
+  local to="$2"
+
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
+
+  for dir in "$from"/*/; do
+    [[ -d "$dir" ]] || continue
+    symlink_dir "$dir" "$to/$(basename "$dir")"
+  done
+}
+
+# Symlink individual scripts — skip machine-owned real files.
+install_scripts() {
+  local from="$1"
+  local to="$2"
+
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
+
+  for script in "$from"/*; do
+    [[ -f "$script" ]] || continue
+    local name="$(basename "$script")"
+    local target="$to/$name"
+
+    if [[ -f "$target" && ! -L "$target" ]]; then
+      skip "Skipped (machine-owned)" name "$name"
+    else
+      run ln -sf "$script" "$target"
+      run chmod +x "$target"
+      info "Installed script" name "$name"
+    fi
+  done
+}
+
+# Inject source line at top of ~/.zshrc without overwriting.
+setup_zshrc() {
+  local base="$ROOT_DIR/.zshrc"
+  local target="$HOME/.zshrc"
+  local marker="# config76:base"
+  local source_line="source \"$base\"  $marker"
+
+  [[ -f "$base" ]] || { warn "No base .zshrc in repo, skipping"; return; }
+
+  if [[ ! -f "$target" ]]; then
+    run bash -c "printf '%s\n' '$source_line' '' > '$target'"
+    info "Created ~/.zshrc with source line"
+  elif grep -qF "$marker" "$target"; then
+    skip "~/.zshrc already has source line"
+  else
+    local tmp
+    tmp="$(mktemp)"
+    printf '%s\n\n' "$source_line" > "$tmp"
+    cat "$target" >> "$tmp"
+    run mv "$tmp" "$target"
+    info "Injected source line into ~/.zshrc"
+    warn "Review ~/.zshrc — remove duplicates below the source line"
+  fi
+}
+
+# Symlink individual JSON files in .claude (skip mcp.json — merged separately).
+setup_claude() {
+  local from="$1"
+  local to="$HOME/.claude"
+
+  [[ -d "$from" ]] || return 0
+  run mkdir -p "$to"
+
+  for file in "$from"/*.json; do
+    [[ -f "$file" ]] || continue
+    local name="$(basename "$file")"
+    [[ "$name" == "mcp.json" ]] && continue
+
+    local target="$to/$name"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+      run mv "$target" "${target}.backup"
+      warn "Backed up existing" name "$name"
+    fi
+
+    run ln -sf "$file" "$target"
+    info "Symlinked" name "$name"
+  done
+}
+
+# Generate ~/.ssh/config from template + secrets.env via envsubst.
+setup_ssh() {
+  local secrets="$SCRIPT_DIR/secrets.env"
+  local template="$SCRIPT_DIR/.ssh/config"
+  local target="$HOME/.ssh/config"
+
+  [[ -f "$template" ]] || return 0
+
+  if [[ ! -f "$secrets" ]]; then
+    warn "No secrets.env — copy arch/secrets.env.example and fill in values. Skipping SSH config."
     return
   fi
-  "$@"
+
+  run mkdir -p "$HOME/.ssh"
+  run bash -c "set -a && source '$secrets' && set +a && envsubst < '$template' > '$target'"
+  run chmod 600 "$target"
+  info "SSH config generated"
 }
 
-log "-#@ dev @#-"
+# ─── Main ───────────────────────────────────────────────────────────────────
 
-# Merge source dir into target (overlay — overwrites matching files, preserves the rest)
-copy_dir() {
-  local from=$1
-  local to=$2
+gum style \
+  --foreground 212 --border-foreground 212 --border double \
+  --align center --width 44 --margin "1 0" \
+  "config76 — arch env"
 
-  pushd "$from" > /dev/null
-  local dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
-  for dir in $dirs; do
-    local name="${dir#./}"
-    execute mkdir -p "$to/$name"
-    execute cp -rf "$name/." "$to/$name/"
-  done
-  popd > /dev/null
-}
+[[ $DRY -eq 1 ]] && warn "Dry run — no changes will be made"
 
-copy_file() {
-  local from=$1
-  local to=$2
+mkdir -p "$XDG_CONFIG_HOME"
 
-  execute mkdir -p "$to"
-  execute cp -f "$from" "$to/"
-}
+section "Shared configs (nvim, tmux, ghostty...)"
+symlink_subdirs "$ROOT_DIR/.config" "$XDG_CONFIG_HOME"
 
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-copy_dir "$script_dir/.config" "$XDG_CONFIG_HOME"
-copy_dir "$script_dir/.local" "$HOME/.local"
-copy_dir "$script_dir/.claude" "$HOME/.claude"
-copy_file "$script_dir/.zshrc" "$HOME"
-copy_file "$script_dir/.zprofile" "$HOME"
-# ── SSH config — generated from template + secrets.env ──
-SECRETS="$script_dir/secrets.env"
-SSH_TEMPLATE="$script_dir/.ssh/config"
-SSH_TARGET="$HOME/.ssh/config"
+section "Arch configs (hypr, kitty, waybar...)"
+symlink_subdirs "$SCRIPT_DIR/.config" "$XDG_CONFIG_HOME"
 
-if [[ ! -f "$SECRETS" ]]; then
-  echo "WARN: $SECRETS not found — copy secrets.env.example and fill in values. Skipping SSH config."
-else
-  execute mkdir -p "$HOME/.ssh"
-  execute bash -c "set -a && source '$SECRETS' && set +a && envsubst < '$SSH_TEMPLATE' > '$SSH_TARGET'"
-  execute chmod 600 "$SSH_TARGET"
-  echo "SSH config generated at $SSH_TARGET"
-fi
-copy_file "$script_dir/CLAUDE.md" "$HOME"
-copy_file "$script_dir/claude-models.sh" "$HOME/.claude"
-copy_file "$script_dir/.claude/mcp.json" "$HOME/.claude"
+section "Shared scripts"
+install_scripts "$ROOT_DIR/.local/scripts" "$HOME/.local/scripts"
 
+section "Arch scripts"
+install_scripts "$SCRIPT_DIR/.local/scripts" "$HOME/.local/scripts"
+
+section "Shell (.zshrc)"
+setup_zshrc
+
+section "SSH config"
+setup_ssh
+
+section "Claude settings"
+setup_claude "$SCRIPT_DIR/.claude"
+
+echo ""
+gum style --foreground 82 --bold "  Done!"
