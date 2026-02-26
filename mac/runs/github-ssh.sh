@@ -2,14 +2,6 @@
 
 set -e
 
-sudo pacman -S --noconfirm openssh
-
-# Copy SSH config
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-mkdir -p "$HOME/.ssh"
-cp "$script_dir/../.ssh/config" "$HOME/.ssh/config"
-chmod 600 "$HOME/.ssh/config"
-
 KEY_COMMENT=$(gum input --placeholder "your@email.com" --prompt "GitHub email: ")
 KEY_FILE="$HOME/.ssh/id_ed25519"
 
@@ -27,22 +19,16 @@ fi
 echo "🧠 Starting ssh-agent..."
 eval "$(ssh-agent -s)"
 
-# 3. Add key to agent
+# 3. Add key to agent (macOS Keychain)
 echo "➕ Adding SSH key to agent..."
-ssh-add "$KEY_FILE"
+ssh-add --apple-use-keychain "$KEY_FILE"
 
 # 4. Copy public key to clipboard
-cat "$KEY_FILE.pub" | wl-copy
-echo "📋 Public key copied to clipboard (Wayland)"
+pbcopy < "$KEY_FILE.pub"
+echo "📋 Public key copied to clipboard"
 
 # 5. Open GitHub SSH key page
-if command -v xdg-open &>/dev/null; then
-  echo "🌐 Opening GitHub SSH keys page..."
-  xdg-open "https://github.com/settings/ssh/new"
-else
-  echo "🔗 Open this page to add the key manually:"
-  echo "https://github.com/settings/ssh/new"
-fi
+echo "🌐 Opening GitHub SSH keys page..."
+open "https://github.com/settings/ssh/new"
 
 echo "✅ Done! Paste your key into GitHub."
-
