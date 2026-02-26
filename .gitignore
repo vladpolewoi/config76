@@ -1,2 +1,4 @@
 secrets.env
 *.backup
+local.conf
+local.lua
