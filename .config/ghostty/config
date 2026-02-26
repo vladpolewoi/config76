@@ -1,8 +1,13 @@
-theme = catppuccin-mocha 
-font-family = "Hack Nerd Font"
-font-size = 16
+theme = Catppuccin Mocha
+font-family = "JetBrainsMono Nerd Font"
+font-size = 20
 cursor-style = block
 copy-on-select = clipboard
 
 background-opacity = 0.8
-background-blur=true
+background-blur = true
+macos-option-as-alt = true
+
+# Machine-specific overrides
+# Create ~/.config/ghostty/local.conf for machine-specific settings (not tracked in repo)
+config-file = ~/.config/ghostty/local.conf
