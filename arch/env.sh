@@ -65,7 +65,19 @@ copy_dir "$script_dir/.local" "$HOME/.local"
 copy_dir "$script_dir/.claude" "$HOME/.claude"
 copy_file "$script_dir/.zshrc" "$HOME"
 copy_file "$script_dir/.zprofile" "$HOME"
-copy_file "$script_dir/.ssh/config" "$HOME/.ssh"
+# ── SSH config — generated from template + secrets.env ──
+SECRETS="$script_dir/secrets.env"
+SSH_TEMPLATE="$script_dir/.ssh/config"
+SSH_TARGET="$HOME/.ssh/config"
+
+if [[ ! -f "$SECRETS" ]]; then
+  echo "WARN: $SECRETS not found — copy secrets.env.example and fill in values. Skipping SSH config."
+else
+  execute mkdir -p "$HOME/.ssh"
+  execute bash -c "set -a && source '$SECRETS' && set +a && envsubst < '$SSH_TEMPLATE' > '$SSH_TARGET'"
+  execute chmod 600 "$SSH_TARGET"
+  echo "SSH config generated at $SSH_TARGET"
+fi
 copy_file "$script_dir/CLAUDE.md" "$HOME"
 copy_file "$script_dir/claude-models.sh" "$HOME/.claude"
 copy_file "$script_dir/.claude/mcp.json" "$HOME/.claude"
