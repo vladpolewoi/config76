@@ -177,5 +177,23 @@ symlink_subdirs "$SCRIPT_DIR/.config" "$XDG_CONFIG_HOME"
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
 
+section "Secrets (.zshrc exports)"
+SECRETS="$SCRIPT_DIR/secrets.env"
+if [[ ! -f "$SECRETS" ]]; then
+  warn "No secrets.env found — copy mac/secrets.env.example and fill in values"
+  warn "Required: NODE_AUTH_TOKEN"
+else
+  while IFS='=' read -r key _; do
+    [[ -z "$key" || "$key" == \#* ]] && continue
+    if ! grep -qF "export $key=" "$HOME/.zshrc" 2>/dev/null; then
+      value=$(grep "^$key=" "$SECRETS" | cut -d'=' -f2-)
+      run bash -c "echo 'export $key=\"$value\"' >> '$HOME/.zshrc'"
+      info "Added to ~/.zshrc" key "$key"
+    else
+      skip "Already in ~/.zshrc" key "$key"
+    fi
+  done < "$SECRETS"
+fi
+
 echo ""
 gum style --foreground 82 --bold "  Done!"
