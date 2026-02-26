@@ -2,10 +2,7 @@
 
 set -e
 
-# Source style helpers (fallback to plain echo)
-_style_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" 2>/dev/null && pwd)"
-[[ -f "$_style_dir/style.sh" ]] && source "$_style_dir/style.sh"
-type header &>/dev/null || { header() { echo "==== $1 ===="; }; success() { echo "  ✓ $1"; }; skip() { echo "  - SKIP: $1"; }; info() { echo "  $1"; }; }
+header() { echo "==== $1 ===="; }; success() { echo "  ✓ $1"; }; skip() { echo "  - SKIP: $1"; }; info() { echo "  $1"; }
 
 header "Remapping Caps Lock → Escape"
 

@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 
 # ── Layout ──
-yabai -m config layout                      bsp
+yabai -m config layout                      float
 yabai -m config window_placement             second_child
+
+# ── Space 2 only: bsp (auto layout) ──
+yabai -m config --space 2 layout            bsp
 
 # ── Padding ──
 yabai -m config top_padding                  8
