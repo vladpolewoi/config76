@@ -11,6 +11,13 @@
     "figma": {
       "type": "http",
       "url": "https://mcp.figma.com/mcp"
+    },
+    "p7-projects": {
+      "command": "node",
+      "args": ["/home/user76/.claude/mcp-servers/p7-projects/server.mjs"],
+      "env": {
+        "P7_BASE_URL": "https://projects.dsd.md"
+      }
     }
   }
 }

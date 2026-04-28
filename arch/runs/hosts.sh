@@ -10,6 +10,8 @@ HOSTS_ENTRIES="
 127.0.0.1 admin-app.r7-office.ru
 127.0.0.1 admin-app.r7.ru
 127.0.0.1 admin-app.dsd.md
+127.0.0.1 projects-app.dsd.md
+127.0.0.1 projects-app.r7-office.ru
 "
 
 for entry in $HOSTS_ENTRIES; do
