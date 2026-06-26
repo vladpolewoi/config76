@@ -157,6 +157,17 @@ setup_ssh() {
   info "SSH config generated"
 }
 
+# Load GTK / desktop settings from a dconf dump.
+setup_dconf() {
+  local file="$SCRIPT_DIR/dconf.ini"
+
+  [[ -f "$file" ]] || return 0
+  command -v dconf &>/dev/null || { warn "dconf not found, skipping"; return; }
+
+  run bash -c "dconf load / < '$file'"
+  info "dconf settings loaded"
+}
+
 # ─── Main ───────────────────────────────────────────────────────────────────
 
 gum style \
@@ -188,6 +199,9 @@ setup_ssh
 
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
+
+section "GTK / desktop (dconf)"
+setup_dconf
 
 echo ""
 gum style --foreground 82 --bold "  Done!"
