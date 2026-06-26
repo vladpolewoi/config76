@@ -1,4 +1,4 @@
-@import "../utils/tokyonight.css";
+@import "../utils/tokyonight-moon.css";
 
 * {
   font-family: "Jetbrains Mono Bold";
@@ -15,19 +15,19 @@ window#waybar {
 #workspaces {
   margin: 12px 0 0 12px;
   background-color: @bg;
-  border-radius: 16px;
-  opacity: 0.8;
+  border-radius: 8px;
+  opacity: 0.95;
 }
 
 #workspaces button {
   padding-left: 10px;
   padding-right: 10px;
-  border-radius: 10px;
+  border-radius: 6px;
 }
 
 #workspaces button:nth-child(1) {
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
   color: @accent-green;
 }
 #workspaces button.active:nth-child(1) {
@@ -56,8 +56,8 @@ window#waybar {
   color: @bg;
 }
 #workspaces button:nth-child(5) {
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
   color: @accent-red;
 }
 #workspaces button.active:nth-child(5) {
@@ -80,7 +80,7 @@ window#waybar {
   padding-left: 10px;
   padding-right: 10px;
   margin-bottom: 0px;
-  border-radius: 10px;
+  border-radius: 8px;
   transition: none;
   color: @bg;
   background: @bright-blue;
@@ -89,19 +89,21 @@ window#waybar {
 #clock.date,
 #custom-weather,
 #clock.time,
+#custom-tmux,
+#custom-claude,
 #cpu,
 #memory,
 #pulseaudio {
   margin-top: 12px;
   background: @bg;
-  opacity: 0.8;
+  opacity: 0.95;
 }
 
 /*MIDDLE*/
 
 #clock.time {
   color: @accent-green;
-  border-radius: 16px;
+  border-radius: 8px;
   padding-right: 16px;
   padding-left: 16px;
 }
@@ -111,7 +113,7 @@ window#waybar {
 /*RIGHT*/
 #clock.date {
   color: @accent-cyan;
-  border-radius: 16px;
+  border-radius: 8px;
   padding-right: 16px;
   padding-left: 16px;
   margin-right: 16px;
@@ -119,16 +121,65 @@ window#waybar {
 
 #custom-weather {
   color: @accent-yellow;
-  border-radius: 16px;
+  border-radius: 8px;
   padding-right: 16px;
   padding-left: 16px;
   margin-right: 16px;
 }
 
+#custom-tmux {
+  color: @accent-purple;
+  border-radius: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-right: 8px;
+}
+#custom-tmux.warn {
+  color: @accent-yellow;
+}
+#custom-tmux.empty {
+  opacity: 0.4;
+}
+
+#custom-claude {
+  color: @bright-green;
+  border-radius: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-right: 8px;
+  min-width: 104px;
+}
+#custom-claude.warn {
+  color: @accent-yellow;
+}
+#custom-claude.crit {
+  color: @bright-red;
+}
+#custom-claude.error {
+  color: @accent-red;
+  opacity: 0.45;
+}
+#custom-claude.refreshing {
+  color: @bright-cyan;
+  animation: claude-pulse 0.45s ease-in-out infinite alternate;
+}
+#custom-claude.done {
+  color: @bright-green;
+  animation: claude-flash 0.4s ease-out;
+}
+@keyframes claude-pulse {
+  from { opacity: 0.25; }
+  to   { opacity: 1.0; }
+}
+@keyframes claude-flash {
+  from { opacity: 0.15; }
+  to   { opacity: 1.0; }
+}
+
 #cpu {
   color: @bright-red;
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
   padding-left: 16px;
   padding-right: 12px;
 }
@@ -140,8 +191,8 @@ window#waybar {
 #pulseaudio {
   color: @bright-cyan;
   padding-right: 16px;
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
   margin-right: 12px;
   min-width: 60px;
 }

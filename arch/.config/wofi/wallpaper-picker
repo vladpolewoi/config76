@@ -1,0 +1,12 @@
+width=860
+height=760
+location=center
+prompt=Wallpaper
+filter_rate=100
+allow_images=true
+image_size=380
+columns=2
+insensitive=true
+hide_scroll=true
+no_actions=true
+gtk_dark=true
