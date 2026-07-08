@@ -7,6 +7,15 @@ fi
 
 export PATH="$HOME/.local/bin:$HOME/.local/scripts:$PATH"
 
+# Export gitignored MCP/tool secrets (consult, telegram, projects) so `claude`
+# and its stdio MCP servers can expand the ${VAR} refs in claude/mcp.json.
+# The platform file lives next to this one: <repo>/{mac,arch}/secrets.env.
+_c76_root="${${(%):-%N}:A:h}"
+if [[ "$OSTYPE" == darwin* ]]; then _c76_sec="$_c76_root/mac/secrets.env"
+else _c76_sec="$_c76_root/arch/secrets.env"; fi
+[[ -f "$_c76_sec" ]] && { set -a; source "$_c76_sec"; set +a; }
+unset _c76_root _c76_sec
+
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="refined"
