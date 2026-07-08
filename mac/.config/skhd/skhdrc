@@ -1,8 +1,8 @@
-# ── Focus window (alt + hjkl) ──
-alt - h : yabai -m window --focus west
-alt - j : yabai -m window --focus south
-alt - k : yabai -m window --focus north
-alt - l : yabai -m window --focus east
+# ── Focus window (ctrl + hjkl) ──
+ctrl - h : yabai -m window --focus west
+ctrl - j : yabai -m window --focus south
+ctrl - k : yabai -m window --focus north
+ctrl - l : yabai -m window --focus east
 
 # ── Swap window (alt+shift + hjkl) ──
 shift + alt - h : yabai -m window --swap west
@@ -24,8 +24,8 @@ ctrl + alt - up    : yabai -m window --resize top:0:-50
 ctrl + alt - down  : yabai -m window --resize bottom:0:50
 
 # ── Maximize / fullscreen ──
-alt - f         : yabai -m window --toggle zoom-fullscreen
-shift + alt - f : yabai -m window --toggle native-fullscreen
+ctrl - f         : yabai -m window --toggle zoom-fullscreen
+shift + ctrl - f : yabai -m window --toggle native-fullscreen
 
 # ── Toggle float + center ──
 alt - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
