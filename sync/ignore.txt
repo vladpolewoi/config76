@@ -78,3 +78,10 @@ pip
 *.backup
 *.tmp
 .DS_Store
+budget76
+nemo
+nextjs-nodejs
+obsidian
+QtProject.conf
+warp-terminal
+claude-models.sh
