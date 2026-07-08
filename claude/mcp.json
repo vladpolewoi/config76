@@ -38,14 +38,14 @@
     },
     "p7-projects": {
       "command": "node",
-      "args": ["${HOME}/.claude/mcp-servers/p7-projects/server.mjs"],
+      "args": ["${HOME}/code/mcp-servers/p7-projects/server.mjs"],
       "env": {
         "P7_BASE_URL": "https://projects.dsd.md"
       }
     },
     "consult": {
       "type": "stdio",
-      "command": "${HOME}/code/consult-mcp/.venv/bin/consult-mcp",
+      "command": "${HOME}/code/mcp-servers/consult-mcp/.venv/bin/consult-mcp",
       "args": [],
       "env": {
         "CONSULT_ANTHROPIC_API_KEY": "${CONSULT_ANTHROPIC_API_KEY}",
@@ -56,13 +56,17 @@
     "projects": {
       "type": "stdio",
       "command": "node",
-      "args": ["${HOME}/code/projects-mcp/dist/index.js"],
-      "env": {}
+      "args": ["${HOME}/code/mcp-servers/projects-mcp/dist/index.js"],
+      "env": {
+        "PROJECTS_API_BASE": "${PROJECTS_API_BASE}",
+        "PROJECTS_LOGIN": "${PROJECTS_LOGIN}",
+        "PROJECTS_PASSWORD": "${PROJECTS_PASSWORD}"
+      }
     },
     "telegram": {
       "type": "stdio",
       "command": "uv",
-      "args": ["--directory", "${HOME}/code/telegram-mcp", "run", "tg-mcp-server"],
+      "args": ["--directory", "${HOME}/code/mcp-servers/telegram-mcp", "run", "tg-mcp-server"],
       "env": {
         "TG_MCP_READONLY": "0",
         "TG_MCP_ALLOWLIST": "${TG_MCP_ALLOWLIST}"

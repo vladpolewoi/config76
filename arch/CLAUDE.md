@@ -35,5 +35,6 @@ secrets are `${VAR}` refs expanded by Claude Code from the launching shell.
   `set -a; source arch/secrets.env; set +a`.
 
 On a fresh machine, if an MCP server fails to start, check (1) its required
-secret env var is exported and (2) its local checkout exists (`consult`,
-`telegram`, `projects` need repos under `~/code/…`).
+secret env var is exported and (2) its code is built. `consult`, `projects`,
+`telegram`, `p7-projects` live in the private `mcp-servers` repo — clone to
+`~/code/mcp-servers` and build per each dir's `SETUP.md` (see `../claude/README.md`).

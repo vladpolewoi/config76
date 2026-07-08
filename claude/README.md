@@ -63,14 +63,28 @@ claude
 
 | Server | Needs |
 |---|---|
-| `consult` | `${CONSULT_ANTHROPIC_API_KEY}` + checkout at `~/code/consult-mcp` (`.venv`) |
-| `telegram` | `${TG_MCP_ALLOWLIST}` + checkout at `~/code/telegram-mcp` (run via `uv`) |
-| `projects` | checkout at `~/code/projects-mcp` (built → `dist/index.js`) |
-| `p7-projects` | server at `~/.claude/mcp-servers/p7-projects/server.mjs` |
+| `consult` | `${CONSULT_ANTHROPIC_API_KEY}` + built `consult-mcp` (`.venv`) |
+| `telegram` | `${TG_MCP_ALLOWLIST}` + one-time `uv run tg-mcp-auth` (keyring) |
+| `projects` | `${PROJECTS_API_BASE/LOGIN/PASSWORD}` + built `projects-mcp` (`dist/`) |
+| `p7-projects` | built `p7-projects` (`npm install`); `P7_BASE_URL` optional |
 
-Local-checkout servers only start on a machine where that repo exists at the
-path above. If an MCP server won't start on a fresh machine, check (1) its
-secret env var is exported and (2) its checkout/build exists.
+The code for these four lives in the **private** [`mcp-servers`](https://github.com/vladpolewoi/mcp-servers)
+repo (not in this public repo — it only holds the config pointer). On a fresh
+machine:
+
+```bash
+gh repo clone vladpolewoi/mcp-servers ~/code/mcp-servers
+cd ~/code/mcp-servers
+(cd consult-mcp && uv sync)
+(cd projects-mcp && npm install && npm run build)
+(cd telegram-mcp && uv sync && uv run tg-mcp-auth)   # one-time Telegram login
+(cd p7-projects && npm install)
+```
+
+`claude/mcp.json` points at `${HOME}/code/mcp-servers/<server>/…`. If a server
+won't start, check (1) its secret env var is exported from `secrets.env` and
+(2) it's cloned + built at that path. See the repo's `README.md` + per-dir
+`SETUP.md`.
 
 ## Adding a server
 
