@@ -1,0 +1,37 @@
+/* Tokyonight Moon - test palette (swap target for waybar style.css) */
+
+@define-color bg          #222436;
+@define-color fg          #c8d3f5;
+@define-color fg-dim      #a9b8e8;
+
+/* Neutrals */
+@define-color surface-0   #1e2030;
+@define-color surface-1   #2f334d;
+@define-color surface-2   #383e5c;
+@define-color surface-3   #444a73;
+
+/* Accents */
+@define-color accent-red      #ff757f;
+@define-color accent-orange   #ff966c;
+@define-color accent-yellow   #ffc777;
+@define-color accent-green    #c3e88d;
+@define-color accent-cyan     #86e1fc;
+@define-color accent-blue     #82aaff;
+@define-color accent-purple   #c099ff;
+@define-color accent-magenta  #fca7ea;
+
+/* Brights (hover/highlight/active) */
+@define-color bright-red      #ff8d94;
+@define-color bright-orange   #ffac84;
+@define-color bright-yellow   #ffd596;
+@define-color bright-green    #d0f0a3;
+@define-color bright-cyan     #a0eaff;
+@define-color bright-blue     #9ab8ff;
+@define-color bright-purple   #4fd6be;
+@define-color bright-magenta  #ffc0f0;
+
+/* Terminal standard colors */
+@define-color term-black         #222436;
+@define-color term-white         #c8d3f5;
+@define-color term-bright-black  #444a73;
+@define-color term-bright-white  #f0f0f5;

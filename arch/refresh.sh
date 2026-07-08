@@ -5,6 +5,7 @@ script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 echo "=-=-=-=- Reloading Configs -=-=-=-="
 
 "$script_dir/env.sh"
+"$script_dir/runs/hosts.sh"
 
 # Set dark theme via gsettings (needed for freedesktop portal / app auto-theme detection)
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'

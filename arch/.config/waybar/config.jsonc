@@ -7,6 +7,8 @@
     "custom/weather",
     "clock#date",
     "network",
+    "custom/tmux",
+    "custom/claude",
     "cpu",
     "memory",
     "pulseaudio",
@@ -80,6 +82,24 @@
         "today": "<span color='#ff6699'><b><u>{}</u></b></span>",
       },
     },
+  },
+
+  "custom/tmux": {
+    "exec": "~/.config/waybar/scripts/tmux-sessions.sh",
+    "return-type": "json",
+    "interval": 3600,
+    "signal": 8,
+    "on-click": "~/.config/waybar/scripts/tmux-kill.sh",
+    "tooltip": true,
+  },
+
+  "custom/claude": {
+    "exec": "~/.config/waybar/scripts/claude-usage.sh",
+    "return-type": "json",
+    "interval": 600,
+    "signal": 9,
+    "on-click": "~/.config/waybar/scripts/claude-usage-refresh.sh",
+    "tooltip": true,
   },
 
   "cpu": {

@@ -1,0 +1,106 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(cd *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(tac *)",
+      "Bash(nl *)",
+      "Bash(wc *)",
+      "Bash(column *)",
+      "Bash(xxd *)",
+      "Bash(od *)",
+      "Bash(hexdump *)",
+      "Bash(comm *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(diff *)",
+      "Bash(cmp *)",
+      "Bash(jq *)",
+      "Bash(stat *)",
+      "Bash(file *)",
+      "Bash(tree *)",
+      "Bash(du *)",
+      "Bash(df *)",
+      "Bash(realpath *)",
+      "Bash(readlink *)",
+      "Bash(basename *)",
+      "Bash(dirname *)",
+      "Bash(whoami)",
+      "Bash(id)",
+      "Bash(id *)",
+      "Bash(hostname)",
+      "Bash(uname *)",
+      "Bash(date)",
+      "Bash(ps *)",
+      "Bash(env)",
+      "Bash(printenv *)",
+      "Bash(which *)",
+      "Bash(type *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git show)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git branch --list*)",
+      "Bash(git remote)",
+      "Bash(git remote -v)",
+      "Bash(git rev-parse *)",
+      "Bash(git ls-files *)",
+      "Bash(git config --get *)",
+      "Bash(git config --list)"
+    ]
+  },
+  "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"CAVEMAN MODE ACTIVE (full). Rules: Drop articles/filler/pleasantries/hedging. Fragments OK. Short synonyms. Pattern: [thing] [action] [reason]. [next step]. Not: \\u0027Sure! I\\u0027d be happy to help you with that.\\u0027 Yes: \\u0027Bug in auth middleware. Fix:\\u0027 Code/commits/security: write normal. User says \\u0027normal\\u0027 or \\u0027stop caveman\\u0027 to deactivate.\"}'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "caveman@caveman": true,
+    "vgv-wingspan@very-good-claude-code-marketplace": false,
+    "frontend-design@claude-plugins-official": false
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "very-good-claude-code-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "VeryGoodOpenSource/very_good_claude_marketplace"
+      }
+    }
+  },
+  "effortLevel": "xhigh",
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true,
+  "tui": "fullscreen"
+}

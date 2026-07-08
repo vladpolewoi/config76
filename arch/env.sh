@@ -113,7 +113,8 @@ setup_zshrc() {
   fi
 }
 
-# Symlink individual JSON files in .claude (skip mcp.json — merged separately).
+# Symlink individual files in .claude (settings*.json, statusline-command.sh...)
+# Skips mcp.json — merged separately.
 setup_claude() {
   local from="$1"
   local to="$HOME/.claude"
@@ -121,7 +122,7 @@ setup_claude() {
   [[ -d "$from" ]] || return 0
   run mkdir -p "$to"
 
-  for file in "$from"/*.json; do
+  for file in "$from"/*; do
     [[ -f "$file" ]] || continue
     local name="$(basename "$file")"
     [[ "$name" == "mcp.json" ]] && continue
@@ -156,6 +157,17 @@ setup_ssh() {
   info "SSH config generated"
 }
 
+# Load GTK / desktop settings from a dconf dump.
+setup_dconf() {
+  local file="$SCRIPT_DIR/dconf.ini"
+
+  [[ -f "$file" ]] || return 0
+  command -v dconf &>/dev/null || { warn "dconf not found, skipping"; return; }
+
+  run bash -c "dconf load / < '$file'"
+  info "dconf settings loaded"
+}
+
 # ─── Main ───────────────────────────────────────────────────────────────────
 
 gum style \
@@ -187,6 +199,9 @@ setup_ssh
 
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
+
+section "GTK / desktop (dconf)"
+setup_dconf
 
 echo ""
 gum style --foreground 82 --bold "  Done!"

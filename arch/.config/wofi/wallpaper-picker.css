@@ -1,0 +1,48 @@
+@define-color bg     #1a1b26;
+@define-color bg2    #2e3348;
+@define-color fg     #c0caf5;
+@define-color accent #7aa2f7;
+
+window {
+  font-size: 16px;
+  font-family: 'JetBrains Nerd Font';
+  background-color: transparent;
+  border-radius: 16px;
+}
+
+#outer-box {
+  padding: 20px;
+  border-radius: 16px;
+  background-color: @bg;
+}
+
+#input {
+  all: unset;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+  color: @fg;
+  background-color: @bg2;
+  border-radius: 12px;
+}
+
+#scroll {
+  background-color: transparent;
+}
+
+/* each wallpaper card is just the preview image */
+#entry {
+  padding: 8px;
+  margin: 6px;
+  border-radius: 14px;
+  background-color: @bg2;
+  border: 2px solid transparent;
+}
+
+#entry:selected {
+  border-color: @accent;
+  background-color: #33405e;
+}
+
+#img {
+  border-radius: 10px;
+}

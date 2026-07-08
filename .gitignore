@@ -1,4 +1,8 @@
 secrets.env
 *.backup
+*.bak
 local.conf
 local.lua
+
+# nvim runtime state (not config)
+last_colorscheme.txt
