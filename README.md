@@ -42,8 +42,25 @@ Each platform has a `secrets.env.example` — copy it to `secrets.env` and fill 
 |---|---|
 | `DSD_CALENDAR_HOST` | Calendar server IP |
 | `DSD_DEV_HOST` | Dev server IP |
+| `CONSULT_ANTHROPIC_API_KEY` | Anthropic API key for the `consult` MCP server (`arch/.claude/mcp.json`) |
 
 ```bash
 cp arch/secrets.env.example arch/secrets.env
 # edit with real values
+```
+
+## MCP servers
+
+MCP servers are declared in `arch/.claude/mcp.json` / `mac/.claude/mcp.json`.
+Secrets are **never hardcoded** there — they reference environment variables
+(e.g. `${CONSULT_ANTHROPIC_API_KEY}`), which Claude Code expands from the
+environment of the shell that launched it.
+
+So on a fresh machine the `consult` server will not start until its key is
+present in the shell environment. Put the value in `arch/secrets.env` (gitignored)
+and export it before launching `claude`, for example:
+
+```bash
+set -a; source arch/secrets.env; set +a   # export everything in the file
+claude
 ```
