@@ -1,0 +1,131 @@
+---
+name: review
+user-invocable: true
+description: Runs quality review agents on demand — reviews code, assesses quality, and identifies issues before merging. Use when user says "review this code", "review my code", "code review", "review", "check this code", or "review before merging".
+argument-hint: "[path/to/files/or/directories (optional)]"
+effort: high
+compatibility: All platforms (uses sequential execution)
+---
+
+# Review code on demand
+
+Run quality review agents. Review manually written code, assess existing codebases, or check a branch before merging.
+
+## Review Scope
+
+<review_scope>$ARGUMENTS</review_scope>
+
+## Step 1 — Detect Scope
+
+Parse the review scope above for optional file paths or directories.
+
+**If paths are provided:**
+
+1. Validate each path exists (split on whitespace, check each token)
+2. Use provided paths as review scope
+3. Announce scope to user and proceed to Step 2
+
+**If no paths provided:**
+
+1. Detect current branch:
+
+   ```bash
+   git rev-parse --abbrev-ref HEAD
+   ```
+
+2. Detect default branch:
+
+   ```bash
+   git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'
+   ```
+
+   Fallback: check for `main`, then `master`.
+
+3. **If on a feature branch** (current branch differs from the default branch):
+   - Get changed files: `git diff <default-branch>...HEAD --name-only`
+   - Include uncommitted changes: `git diff --name-only` and `git diff --cached --name-only`
+   - Deduplicate the combined file list
+   - Announce scope summary: number of changed files, which areas of the codebase are affected
+   - Proceed to Step 2 — the user invoked `/review`, intent is clear
+
+4. **If on the default branch:**
+   - Tell the user: "You're on `<branch>`. No branch diff available."
+   - Use **AskUserQuestion**: "What would you like to review?" with options:
+     - **Specify files or directories**: accept paths from the user
+     - **Review entire project**: no scope constraint
+
+## Step 2 — Run Reviews
+
+Run the **default review perspectives** sequentially. Read each reference file and perform the review, writing detailed reports to `docs/code-review/`.
+
+Default review perspectives and their reference files:
+
+| Perspective | Reference File | Report File |
+|-------------|----------------|-------------|
+| VGV Standards | `references/vgv-review-agent.md` | `docs/code-review/vgv-review.md` |
+| Code Simplicity | `references/code-simplicity-review-agent.md` | `docs/code-review/code-simplicity-review.md` |
+| Test Quality | `references/test-quality-review-agent.md` | `docs/code-review/test-quality-review.md` |
+| Architecture | `references/architecture-review-agent.md` | `docs/code-review/architecture-review.md` |
+
+For each perspective, in order:
+
+1. **Read the reference file** (e.g., `references/vgv-review-agent.md`)
+2. **Apply the review instructions** to the scope files
+3. **Write the detailed report** to the corresponding `docs/code-review/<name>.md` file
+4. **Return a short summary** in this format:
+
+   ```markdown
+   ## <Perspective Name> Summary
+   **Report**: `docs/code-review/<name>.md` (<word_count> words)
+   **Critical**: <count> | **Important**: <count> | **Suggestions**: <count>
+   ### Findings
+   - [Critical] <one-line description>
+   - [Important] <one-line description>
+   - [Suggestion] <one-line description>
+   ```
+
+Projects may define additional review perspectives in their `CLAUDE.md` — if any are specified, include them alongside the defaults. Projects may also replace the default set entirely by specifying their own list.
+
+Each review perspective must include the scope constraint (changed files, specific paths, or full project) and follow the report output instructions above.
+
+**If a review fails:** Note the failure, continue with successful reviews. After all reviews complete, report which (if any) failed and offer to retry.
+
+## Step 3 — Consolidate & Present
+
+After all reviews complete:
+
+1. **Consolidate findings** from all summaries into three categories:
+   - **Critical** (must fix before merge): Bugs, missing tests, layer violations, broken analysis
+   - **Important** (should fix): Convention deviations, test gaps, naming issues
+   - **Suggestions** (nice to have): Style improvements, minor simplifications
+
+2. **Present the consolidated summary** to the user with counts per category and the one-line descriptions from each agent.
+
+3. **If no findings:** Code looks good. Reports are at `docs/code-review/`.
+
+## Step 4 — Act
+
+Use **AskUserQuestion** to present post-review options:
+
+- **Auto-fix critical issues**: Read the specific report files for full details on each critical finding. Fix them, then run the project's linter and test runner for validation. One attempt per fix — if validation fails, present the issue to the user with context on what failed and what was tried, and move on. Only modify files within the original review scope.
+- **Fix all issues (critical + important)**: Same as above but also address important findings. Read relevant report files for details. Only modify files within the original review scope.
+- **Review the list**: Show the full list of findings with report file paths so the user can decide what to address manually.
+- **Keep reports and exit**: Reports remain at `docs/code-review/` for manual review. Done.
+
+**After fixing (if chosen):**
+
+1. Run project linter and test runner for validation (no agent re-run)
+2. Present a brief summary of what was fixed
+
+## Gotchas
+
+- If `docs/code-review/` already exists from a previous review, old reports will be overwritten by agents with the same name. Delete the directory first if you want a clean slate.
+- On the default branch with no diff, the review scope is ambiguous. The skill asks the user to specify — do not default to reviewing the entire project without confirmation.
+- Agent failures are non-fatal. If one agent fails, the others still produce reports. Always report which agents failed so the user knows the review is incomplete.
+- Auto-fix only modifies files within the original review scope. If a fix requires changes outside scope (e.g., updating a shared import), flag it to the user instead of silently expanding scope.
+
+## Important
+
+- Reports are kept at `docs/code-review/` as untracked working files. Commit or delete them when no longer needed.
+- This skill is advisory. It presents findings and lets you decide what to act on.
+- When in doubt about a finding, read the full report file for details before deciding.
