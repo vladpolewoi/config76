@@ -53,18 +53,20 @@ per-machine override (e.g. mac's lower `effortLevel`).
 
 ## Secrets & prerequisites
 
-Servers that reference `${VAR}` need that var exported before `claude` starts.
-Put values in `<platform>/secrets.env` (gitignored) and export them:
+Servers that reference `${VAR}` need that var in the environment when `claude`
+starts. Put values in `<platform>/secrets.env` (gitignored); the shared `.zshrc`
+auto-sources it on shell init, so a `claude` launched from a normal terminal
+already has them. If you launch from a shell that never sourced it, export first:
 
 ```bash
-set -a; source arch/secrets.env; set +a   # or mac/secrets.env
+set -a; source mac/secrets.env; set +a   # or arch/secrets.env
 claude
 ```
 
 | Server | Needs |
 |---|---|
-| `consult` | `${CONSULT_ANTHROPIC_API_KEY}` + built `consult-mcp` (`.venv`) |
-| `telegram` | `${TG_MCP_ALLOWLIST}` + one-time `uv run tg-mcp-auth` (keyring) |
+| `consult` | `${CONSULT_ANTHROPIC_API_KEY}` (or user-level `~/.consult-mcp/.env`, which wins) + built `consult-mcp` (`.venv`) |
+| `telegram` | `${TG_MCP_ALLOWLIST}` = **path** to a JSON allowlist file (`{"chats":[…]}`) + one-time `uv run tg-mcp-auth` (keyring) |
 | `projects` | `projects-mcp/.env` (copy `.env.example`) + built `projects-mcp` (`dist/`) |
 | `p7-projects` | built `p7-projects` (`npm install`); `P7_BASE_URL` optional |
 
