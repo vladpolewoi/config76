@@ -199,6 +199,7 @@ setup_ssh
 
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
+symlink_dir "$SCRIPT_DIR/.claude/skills" "$HOME/.claude/skills"
 
 section "GTK / desktop (dconf)"
 setup_dconf

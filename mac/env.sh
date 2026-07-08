@@ -176,6 +176,7 @@ symlink_subdirs "$SCRIPT_DIR/.config" "$XDG_CONFIG_HOME"
 
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
+symlink_dir "$SCRIPT_DIR/.claude/skills" "$HOME/.claude/skills"
 
 echo ""
 gum style --foreground 82 --bold "  Done!"
