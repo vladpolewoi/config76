@@ -57,11 +57,7 @@
       "type": "stdio",
       "command": "node",
       "args": ["${HOME}/code/mcp-servers/projects-mcp/dist/index.js"],
-      "env": {
-        "PROJECTS_API_BASE": "${PROJECTS_API_BASE}",
-        "PROJECTS_LOGIN": "${PROJECTS_LOGIN}",
-        "PROJECTS_PASSWORD": "${PROJECTS_PASSWORD}"
-      }
+      "env": {}
     },
     "telegram": {
       "type": "stdio",

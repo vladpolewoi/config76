@@ -65,7 +65,7 @@ claude
 |---|---|
 | `consult` | `${CONSULT_ANTHROPIC_API_KEY}` + built `consult-mcp` (`.venv`) |
 | `telegram` | `${TG_MCP_ALLOWLIST}` + one-time `uv run tg-mcp-auth` (keyring) |
-| `projects` | `${PROJECTS_API_BASE/LOGIN/PASSWORD}` + built `projects-mcp` (`dist/`) |
+| `projects` | `projects-mcp/.env` (copy `.env.example`) + built `projects-mcp` (`dist/`) |
 | `p7-projects` | built `p7-projects` (`npm install`); `P7_BASE_URL` optional |
 
 The code for these four lives in the **private** [`mcp-servers`](https://github.com/vladpolewoi/mcp-servers)
