@@ -1,0 +1,80 @@
+# sync/ignore.txt
+# Basenames / globs under watched roots that are NEVER dotfiles — app runtime
+# state, caches, browser profiles. status.sh skips these when reporting
+# untracked candidates. Grow this list as new noise appears.
+# Matched against the entry basename with bash [[ == ]] glob semantics.
+
+# ── Browsers / Electron profiles ──
+BraveSoftware
+Brave*
+chromium
+google-chrome*
+microsoft-edge
+opera
+vivaldi
+Slack
+discord
+Code
+Cache
+Caches
+CachedData
+
+# ── App runtime / desktop plumbing ──
+dconf
+pulse
+pipewire
+systemd
+procps
+gh
+github-copilot
+calibre
+libreoffice
+matplotlib
+go
+opencode
+Pencil
+enchant
+pavucontrol.ini
+mimeapps.list
+user-dirs.dirs
+user-dirs.locale
+
+# ── Claude Code runtime state & SECRETS (never adopt) ──
+# mcp.json / mcp-*.json are merged into ~/.claude.json separately, not symlinked.
+mcp.json
+mcp-*.json
+mcp-servers
+.credentials.json
+.credentials*
+history.jsonl
+stats-cache.json
+package.json
+package-lock.json
+statusline-test.sh
+.caveman-active
+.last-cleanup
+todos
+projects
+shell-snapshots
+ide
+plugins
+logs
+
+# ── Package managers / language runtimes ──
+uv
+yarn
+yay
+go
+npm
+pip
+.theme-backup*
+
+# ── Generic noise ──
+*.log
+*.socket
+*.pid
+*.lock
+*.bak
+*.backup
+*.tmp
+.DS_Store

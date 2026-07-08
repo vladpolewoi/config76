@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# config-sync — one command to sync this machine with the config76 repo.
+# Installed onto PATH by env.sh (symlinked into ~/.local/scripts). Works the
+# same on Arch and macOS; resolves the repo from its own real location.
+#
+#   config-sync                 show drift (status)
+#   config-sync status [--json] read-only drift report
+#   config-sync pull            repo → machine (pull + install/symlink)
+#   config-sync push ["msg"]    machine → repo (stage + secrets-gate + push)
+#   config-sync apply <plan>    execute a sync plan (dry-run unless --apply)
+#
+# For classification of new configs / conflict resolution, run the
+# `dotfiles-sync` Claude Code skill — it reads status, writes a plan, then
+# calls `config-sync apply`.
+
+set -euo pipefail
+SELF="$(readlink -f "${BASH_SOURCE[0]}")"
+# real path: $REPO/.local/scripts/config-sync
+REPO="$(cd "$(dirname "$SELF")/../.." && pwd)"
+SYNC="$REPO/sync"
+
+cmd="${1:-status}"; shift || true
+case "$cmd" in
+  status) exec bash "$SYNC/status.sh" "$@" ;;
+  pull)   exec bash "$SYNC/pull.sh"   "$@" ;;
+  push)   exec bash "$SYNC/push.sh"   "$@" ;;
+  apply)  exec bash "$SYNC/apply.sh"  "$@" ;;
+  -h|--help|help)
+    awk 'NR>=3 && /^#/ {sub(/^# ?/,""); print} NR>=3 && !/^#/ {exit}' "$SELF" ;;
+  *) echo "unknown command: $cmd (try: status|pull|push|apply)" >&2; exit 1 ;;
+esac

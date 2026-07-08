@@ -138,6 +138,33 @@ setup_claude() {
   done
 }
 
+# Merge shared + platform Claude skills into ~/.claude/skills.
+# ~/.claude/skills must be a REAL dir holding per-skill symlinks so the shared
+# library (repo root claude/skills) and platform extras ($platform/.claude/skills)
+# can coexist. A whole-dir symlink (old behavior) could only ever point at one.
+setup_skills() {
+  local platform="$1"
+  local shared="$ROOT_DIR/claude/skills"
+  local to="$HOME/.claude/skills"
+
+  # Replace a stale whole-dir symlink from the old wiring with a real dir.
+  if [[ -L "$to" ]]; then
+    run rm "$to"
+    warn "Removed stale skills symlink" path "skills"
+  fi
+  run mkdir -p "$to"
+
+  local src skill
+  # Shared first, platform second — platform overlays same-named skills.
+  for src in "$shared" "$platform"; do
+    [[ -d "$src" ]] || continue
+    for skill in "$src"/*/; do
+      [[ -d "$skill" ]] || continue
+      symlink_dir "$skill" "$to/$(basename "$skill")"
+    done
+  done
+}
+
 # Generate ~/.ssh/config from template + secrets.env via envsubst.
 setup_ssh() {
   local secrets="$SCRIPT_DIR/secrets.env"
@@ -199,7 +226,7 @@ setup_ssh
 
 section "Claude settings"
 setup_claude "$SCRIPT_DIR/.claude"
-symlink_dir "$SCRIPT_DIR/.claude/skills" "$HOME/.claude/skills"
+setup_skills "$SCRIPT_DIR/.claude/skills"
 
 section "GTK / desktop (dconf)"
 setup_dconf

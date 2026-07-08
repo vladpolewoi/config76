@@ -30,6 +30,39 @@ bash env.sh       # copy dotfiles and configs
 
 ---
 
+## Two-way sync (`config-sync`)
+
+`env.sh` **symlinks** the repo into place, so editing a tracked config edits the
+repo directly. The `sync/` tools handle the rest: discovering *new* or *drifted*
+configs, classifying them, and pushing.
+
+```bash
+config-sync            # or: config-sync status  — show what drifted (read-only)
+config-sync pull       # repo → machine: git pull --rebase + re-run env.sh
+config-sync push "msg" # machine → repo: stage + secrets-gate + rebase + push
+```
+
+`config-sync` is installed onto `PATH` by `env.sh` (symlinked into
+`~/.local/scripts`) and works identically on Arch and macOS.
+
+**Deciding where a new config belongs** (shared vs arch vs mac vs a package to
+install) and **resolving conflicts** needs judgment — run the **`dotfiles-sync`
+Claude Code skill**. It reads `config-sync status --json`, classifies each item,
+writes a `plan.json`, and drives `sync/apply.sh` (dry-run first) then the push.
+
+Under the hood (`sync/`):
+
+| Script | Role | Side effects |
+|---|---|---|
+| `status.sh [--json]` | drift discovery | none |
+| `apply.sh <plan> [--apply]` | execute a plan (adopt / resolve / install / ignore) | dry-run by default, secrets-gated |
+| `pull.sh` / `push.sh` | git wrappers | yes |
+| `ignore.txt` | noise/secret patterns `status.sh` skips | — |
+
+Every write path runs a **secrets scan** before anything enters git.
+
+---
+
 ## Required Secrets
 
 Some configs depend on machine-specific values that are never committed.
