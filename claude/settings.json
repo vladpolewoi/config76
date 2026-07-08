@@ -61,6 +61,10 @@
       "Bash(git ls-files *)",
       "Bash(git config --get *)",
       "Bash(git config --list)"
+    ],
+    "ask": [
+      "mcp__telegram__prepare_send",
+      "mcp__telegram__send_message"
     ]
   },
   "model": "opus",
