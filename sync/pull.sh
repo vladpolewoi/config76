@@ -25,6 +25,6 @@ ok "Repo up to date."
 
 ENV="$REPO/$PLATFORM/env.sh"
 [[ -x "$ENV" ]] || die "no $ENV"
-info "Installing/symlinking via $PLATFORM/env.sh $DRY…"
+info "Installing/symlinking via $PLATFORM/env.sh ${DRY}…"
 bash "$ENV" $DRY
 ok "Machine synced from repo."

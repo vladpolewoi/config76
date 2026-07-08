@@ -86,3 +86,4 @@ QtProject.conf
 warp-terminal
 claude-models.sh
 .last-update-result.json
+.caveman-mode-log.jsonl
