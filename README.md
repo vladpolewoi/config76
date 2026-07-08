@@ -8,10 +8,14 @@ Dotfiles and machine setup for macOS and Arch Linux.
 config76/
   .config/       Shared configs: nvim, tmux, ghostty
   .local/        Shared scripts
+  claude/        Shared Claude Code config (mcp, settings, statusline, skills)
   .zshrc         Base shell config (sourced by machine ~/.zshrc)
-  mac/           macOS-specific setup
-  arch/          Arch Linux-specific setup
+  mac/           macOS-specific setup + overlays
+  arch/          Arch Linux-specific setup + overlays
 ```
+
+Config is **shared by default**. Platform dirs (`mac/`, `arch/`) hold only
+OS-specific setup and thin overlays over the shared base.
 
 ## Setup
 
@@ -75,7 +79,8 @@ Each platform has a `secrets.env.example` — copy it to `secrets.env` and fill 
 |---|---|
 | `DSD_CALENDAR_HOST` | Calendar server IP |
 | `DSD_DEV_HOST` | Dev server IP |
-| `CONSULT_ANTHROPIC_API_KEY` | Anthropic API key for the `consult` MCP server (`arch/.claude/mcp.json`) |
+| `CONSULT_ANTHROPIC_API_KEY` | Anthropic API key for the `consult` MCP server (`claude/mcp.json`) |
+| `TG_MCP_ALLOWLIST` | Allowlist for the `telegram` MCP server (`claude/mcp.json`) |
 
 ```bash
 cp arch/secrets.env.example arch/secrets.env
@@ -84,14 +89,23 @@ cp arch/secrets.env.example arch/secrets.env
 
 ## MCP servers
 
-MCP servers are declared in `arch/.claude/mcp.json` / `mac/.claude/mcp.json`.
-Secrets are **never hardcoded** there — they reference environment variables
-(e.g. `${CONSULT_ANTHROPIC_API_KEY}`), which Claude Code expands from the
-environment of the shell that launched it.
+MCP servers are **shared** in `claude/mcp.json` and applied on both machines.
+Each platform adds only OS-specific servers in its overlay
+(`mac/.claude/mcp.json` = `XcodeBuildMCP`; `arch/.claude/mcp.json` = empty).
+`claude/merge-mcp.py` (run by `env.sh` / `runs/claude.sh`) unions the shared
+base + overlay into `~/.claude.json` — Claude Code reads servers from there, not
+from `~/.claude/mcp.json`. The merge is additive: manually-added servers survive.
 
-So on a fresh machine the `consult` server will not start until its key is
-present in the shell environment. Put the value in `arch/secrets.env` (gitignored)
-and export it before launching `claude`, for example:
+Secrets are **never hardcoded** — they reference environment variables
+(e.g. `${CONSULT_ANTHROPIC_API_KEY}`, `${TG_MCP_ALLOWLIST}`), which Claude Code
+expands from the shell that launched it. Local paths use `${HOME}` so the
+committed config stays portable. Some servers also need a local checkout at
+`~/code/…` — see [`claude/README.md`](claude/README.md) for the full
+server/secret/prerequisite table.
+
+So on a fresh machine the `consult` (or `telegram`) server will not start until
+its key is present in the shell environment. Put the value in `arch/secrets.env`
+(gitignored) and export it before launching `claude`, for example:
 
 ```bash
 set -a; source arch/secrets.env; set +a   # export everything in the file

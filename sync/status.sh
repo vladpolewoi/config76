@@ -147,7 +147,7 @@ scan_root() {
 scan_repo_state
 scan_root "$XDG_CONFIG_HOME"        subdir "$REPO/.config" "$REPO/$PLATFORM/.config"
 scan_root "$HOME/.local/scripts"    file   "$REPO/.local/scripts" "$REPO/$PLATFORM/.local/scripts"
-scan_root "$HOME/.claude"           file   "$REPO/$PLATFORM/.claude"
+scan_root "$HOME/.claude"           file   "$REPO/claude" "$REPO/$PLATFORM/.claude"
 scan_root "$HOME/.claude/skills"    subdir "$REPO/claude/skills" "$REPO/$PLATFORM/.claude/skills"
 scan_root "$HOME/.claude/commands"  file   "$REPO/$PLATFORM/.claude/commands"
 

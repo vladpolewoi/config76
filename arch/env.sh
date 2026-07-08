@@ -113,29 +113,43 @@ setup_zshrc() {
   fi
 }
 
-# Symlink individual files in .claude (settings*.json, statusline-command.sh...)
-# Skips mcp.json — merged separately.
+# Link shared + platform Claude config into ~/.claude, then merge MCP servers.
+# Shared base lives in repo-root claude/ (settings.json, statusline-command.sh);
+# the platform dir ($platform/.claude) overlays it (e.g. settings.local.json).
+# mcp.json is NOT symlinked — it is merged into ~/.claude.json by merge-mcp.py.
 setup_claude() {
-  local from="$1"
+  local overlay="$1"
+  local shared="$ROOT_DIR/claude"
   local to="$HOME/.claude"
-
-  [[ -d "$from" ]] || return 0
   run mkdir -p "$to"
 
-  for file in "$from"/*; do
-    [[ -f "$file" ]] || continue
-    local name="$(basename "$file")"
-    [[ "$name" == "mcp.json" ]] && continue
+  local dir file name target
+  # Shared first, platform overlay second (same-named files override).
+  for dir in "$shared" "$overlay"; do
+    [[ -d "$dir" ]] || continue
+    for file in "$dir"/*; do
+      [[ -f "$file" ]] || continue
+      name="$(basename "$file")"
+      case "$name" in mcp.json | merge-mcp.py | README.md) continue ;; esac
 
-    local target="$to/$name"
-    if [[ -f "$target" && ! -L "$target" ]]; then
-      run mv "$target" "${target}.backup"
-      warn "Backed up existing" name "$name"
-    fi
-
-    run ln -sf "$file" "$target"
-    info "Symlinked" name "$name"
+      target="$to/$name"
+      if [[ -f "$target" && ! -L "$target" ]]; then
+        run mv "$target" "${target}.backup"
+        warn "Backed up existing" name "$name"
+      fi
+      run ln -sf "$file" "$target"
+      info "Symlinked" name "$name"
+    done
   done
+
+  # Merge shared + platform MCP servers into ~/.claude.json (additive union).
+  if [[ $DRY -eq 1 ]]; then
+    skip "dry: merge-mcp.py $shared/mcp.json $overlay/mcp.json"
+  else
+    local status
+    status="$(python3 "$shared/merge-mcp.py" "$shared/mcp.json" "$overlay/mcp.json")"
+    info "MCP servers merged into ~/.claude.json" status "$status"
+  fi
 }
 
 # Merge shared + platform Claude skills into ~/.claude/skills.

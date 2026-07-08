@@ -2,88 +2,33 @@
 
 set -e
 
-header() { echo "==== $1 ===="; }; success() { echo "  ✓ $1"; }; skip() { echo "  - SKIP: $1"; }; info() { echo "  $1"; }; step() { echo ">> $1"; }; warn() { echo "WARN: $1"; }
+header() { echo "==== $1 ===="; }; success() { echo "  ✓ $1"; }; skip() { echo "  - SKIP: $1"; }; info() { echo "  $1"; }; warn() { echo "WARN: $1"; }
 
-header "Claude Code"
+header "Claude Code — MCP servers"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAC_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SOURCE_DIR="$MAC_ROOT/.claude"
-CLAUDE_JSON="$HOME/.claude.json"
+REPO_ROOT="$(cd "$MAC_ROOT/.." && pwd)"
 
-# --- MCP servers ---
+SHARED_MCP="$REPO_ROOT/claude/mcp.json"
+OVERLAY_MCP="$MAC_ROOT/.claude/mcp.json"
+MERGE="$REPO_ROOT/claude/merge-mcp.py"
+
 # Claude Code reads mcpServers from ~/.claude.json (NOT ~/.claude/mcp.json).
-# Merge our MCP config into the top-level "mcpServers" key.
-MCP_SOURCE="$SOURCE_DIR/mcp.json"
-if [ -f "$MCP_SOURCE" ]; then
-  [ -f "$CLAUDE_JSON" ] || echo '{}' > "$CLAUDE_JSON"
-
-  # Resolve bare command names to full paths, then merge into ~/.claude.json
-  result=$(python3 -c "
-import json, shutil
-
-with open('$MCP_SOURCE') as f:
-    mcp = json.load(f)
-with open('$CLAUDE_JSON') as f:
-    claude = json.load(f)
-
-servers = mcp.get('mcpServers', {})
-for cfg in servers.values():
-    cmd = cfg.get('command', '')
-    if '/' not in cmd:
-        full = shutil.which(cmd)
-        if full:
-            cfg['command'] = full
-
-old = json.dumps(claude.get('mcpServers', {}), sort_keys=True)
-new = json.dumps(servers, sort_keys=True)
-
-if old == new:
-    print('SKIP')
-else:
-    claude['mcpServers'] = servers
-    with open('$CLAUDE_JSON', 'w') as f:
-        json.dump(claude, f, indent=2)
-    print('UPDATED')
-")
-
+# merge-mcp.py unions the shared base + this platform's overlay into that file,
+# preserving any servers already present. Settings and the statusline are linked
+# by env.sh (setup_claude); this script only touches MCP so a plain `claude`
+# launch after `git pull` still picks up new servers.
+if [ -f "$MERGE" ] && [ -f "$SHARED_MCP" ]; then
+  result=$(python3 "$MERGE" "$SHARED_MCP" "$OVERLAY_MCP")
   if [ "$result" = "SKIP" ]; then
     skip "MCP servers (unchanged)"
   else
     success "MCP servers merged into ~/.claude.json"
-    info "Servers: $(python3 -c "import json; d=json.load(open('$MCP_SOURCE')); print(', '.join(d.get('mcpServers',{}).keys()))")"
   fi
+  info "Servers: $(python3 -c "import json,sys; ks=set(); [ks.update(json.load(open(p)).get('mcpServers',{})) for p in sys.argv[1:] if __import__('os').path.exists(p)]; print(', '.join(sorted(ks)))" "$SHARED_MCP" "$OVERLAY_MCP")"
 else
-  skip "No mcp.json found in $SOURCE_DIR"
+  skip "No shared mcp.json / merge-mcp.py found under $REPO_ROOT/claude"
 fi
 
-# --- Other config files (settings.json, etc.) ---
-TARGET_DIR="$HOME/.claude"
-mkdir -p "$TARGET_DIR"
-
-for file in "$SOURCE_DIR"/*.json; do
-  [ -f "$file" ] || continue
-  name=$(basename "$file")
-
-  # Skip mcp.json — handled above via ~/.claude.json merge
-  [ "$name" = "mcp.json" ] && continue
-
-  target="$TARGET_DIR/$name"
-
-  if [ -L "$target" ]; then
-    rm "$target"
-  elif [ -e "$target" ]; then
-    if cmp -s "$file" "$target"; then
-      skip "~/.claude/$name (unchanged)"
-      continue
-    fi
-    mv "$target" "$target.backup"
-    warn "Backed up: $target -> $target.backup"
-  fi
-
-  cp "$file" "$target"
-  success "Copied ~/.claude/$name"
-  info "$file -> $target"
-done
-
-success "Claude Code config complete"
+success "Claude Code MCP config complete"
