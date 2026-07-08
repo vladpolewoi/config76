@@ -18,6 +18,26 @@
       "env": {
         "P7_BASE_URL": "https://projects.dsd.md"
       }
+    },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
+    },
+    "consult": {
+      "type": "stdio",
+      "command": "/home/user76/code/consult-mcp/.venv/bin/consult-mcp",
+      "args": [],
+      "env": {
+        "CONSULT_ANTHROPIC_API_KEY": "${CONSULT_ANTHROPIC_API_KEY}",
+        "CONSULT_MAX_INPUT_USD": "1.50",
+        "CONSULT_SPEND_LOG": "/home/user76/.consult-mcp/spend.jsonl"
+      }
+    },
+    "projects": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/home/user76/code/projects-mcp/dist/index.js"],
+      "env": {}
     }
   }
 }

@@ -76,6 +76,7 @@
       }
     ]
   },
+  "enableWorkflows": true,
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
@@ -100,7 +101,8 @@
     }
   },
   "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
-  "tui": "fullscreen"
+  "voiceEnabled": true
 }
