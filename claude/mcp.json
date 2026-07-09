@@ -12,21 +12,9 @@
       "command": "uvx",
       "args": ["mcp-server-fetch"]
     },
-    "figma": {
-      "type": "http",
-      "url": "https://mcp.figma.com/mcp"
-    },
     "mobbin": {
       "type": "http",
       "url": "https://api.mobbin.com/mcp"
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/"
-    },
-    "linear-server": {
-      "type": "http",
-      "url": "https://mcp.linear.app/mcp"
     },
     "tavily-remote-mcp": {
       "type": "http",
