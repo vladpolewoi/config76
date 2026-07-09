@@ -68,9 +68,8 @@ claude
 | `consult` | `${CONSULT_ANTHROPIC_API_KEY}` (or user-level `~/.consult-mcp/.env`, which wins) + built `consult-mcp` (`.venv`) |
 | `telegram` | `${TG_MCP_ALLOWLIST}` = **path** to a JSON allowlist file (`{"chats":[…]}`) + one-time `uv run tg-mcp-auth` (keyring) |
 | `projects` | `projects-mcp/.env` (copy `.env.example`) + built `projects-mcp` (`dist/`) |
-| `p7-projects` | built `p7-projects` (`npm install`); `P7_BASE_URL` optional |
 
-The code for these four lives in the **private** [`mcp-servers`](https://github.com/vladpolewoi/mcp-servers)
+The code for these three lives in the **private** [`mcp-servers`](https://github.com/vladpolewoi/mcp-servers)
 repo (not in this public repo — it only holds the config pointer). On a fresh
 machine:
 
@@ -80,7 +79,6 @@ cd ~/code/mcp-servers
 (cd consult-mcp && uv sync)
 (cd projects-mcp && npm install && npm run build)
 (cd telegram-mcp && uv sync && uv run tg-mcp-auth)   # one-time Telegram login
-(cd p7-projects && npm install)
 ```
 
 `claude/mcp.json` points at `${HOME}/code/mcp-servers/<server>/…`. If a server

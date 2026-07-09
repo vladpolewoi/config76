@@ -36,13 +36,6 @@
       "command": "npx",
       "args": ["-y", "@kimsungwhee/apple-docs-mcp@latest"]
     },
-    "p7-projects": {
-      "command": "node",
-      "args": ["${HOME}/code/mcp-servers/p7-projects/server.mjs"],
-      "env": {
-        "P7_BASE_URL": "https://projects.dsd.md"
-      }
-    },
     "consult": {
       "type": "stdio",
       "command": "${HOME}/code/mcp-servers/consult-mcp/.venv/bin/consult-mcp",
