@@ -29,7 +29,7 @@ STAGING_DIR="/var/www/r7-office/calendar-app"   # staging docroot (URL: /)
 PREVIEW_BASE="/var/www/r7-office/previews"       # parent of all preview folders
 PUBLIC_HOST="calendar-dev.r7-office.ru"
 BUILD_DIR="dist"
-PROJECTS_MCP_CLI="/home/user76/code/projects-mcp/dist/cli.js"   # writes Preview Link to the board
+PROJECTS_MCP_CLI="/home/user76/code/mcp-servers/projects-mcp/dist/cli.js"   # writes Preview Link to the board
 PREVIEW_WT="/home/user76/code/Calendar-App-wt-preview"          # isolated checkout for preview builds
 READY_STATUS="Ready to test"                                    # board status set after a preview deploy
 
