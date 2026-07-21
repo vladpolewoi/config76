@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+# iosdev — drive iOS builds on a remote Mac from Arch.
+#
+# Full docs / troubleshooting / new-app setup: ~/.config/iosdev/README.md
+#
+# Source lives on Arch (your editor, git, worktrees). This rsyncs the current
+# worktree to the Mac, runs xcodebuild there (incremental, per-worktree
+# DerivedData), and installs the result to your iPhone/iPad.
+#
+# Config precedence (later wins):
+#   1. ~/.config/iosdev/config      (global: MAC_HOST, DEVICE_UDID, ...)
+#   2. <repo>/.iosdev               (per-project: SCHEME, BUNDLE_ID, ...)
+#   3. environment variables
+#
+# Usage:
+#   iosdev doctor          # check ssh, remote xcodebuild, device visibility
+#   iosdev udid            # list device UDIDs (Mac side, or Arch if wired here)
+#   iosdev sync            # rsync current worktree -> Mac (no build)
+#   iosdev build           # sync + incremental device build
+#   iosdev run             # build + install to device  (the main loop)
+#   iosdev run --launch    # build + install + launch the app
+#   iosdev logs            # stream device console
+#   iosdev watch           # rebuild+install on every source save (needs inotify-tools)
+set -euo pipefail
+
+# ---------- defaults ----------
+REMOTE_ROOT="${REMOTE_ROOT:-iosbuild}"     # build mirror root on the Mac ($HOME-relative)
+CONFIGURATION="${CONFIGURATION:-Debug}"
+INSTALL_MODE="${INSTALL_MODE:-mac}"        # mac = devicectl on the Mac | arch = ideviceinstaller here
+DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
+SCHEME="${SCHEME:-}"
+BUNDLE_ID="${BUNDLE_ID:-}"
+MAC_HOST="${MAC_HOST:-}"
+DEVICE_UDID="${DEVICE_UDID:-}"
+
+# ---------- load config files ----------
+GLOBAL_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/iosdev/config"
+[ -f "$GLOBAL_CONF" ] && . "$GLOBAL_CONF"
+
+die() { printf '\033[31miosdev: %s\033[0m\n' "$*" >&2; exit 1; }
+info() { printf '\033[36m» %s\033[0m\n' "$*" >&2; }
+ok()   { printf '\033[32m✓ %s\033[0m\n' "$*" >&2; }
+
+# ---------- find the project ----------
+find_repo() {
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if compgen -G "$d"/*.xcodeproj >/dev/null 2>&1; then echo "$d"; return 0; fi
+    d="$(dirname "$d")"
+  done
+  return 1
+}
+
+# help/usage needs no project — handle before locating the repo
+case "${1:-}" in
+  -h|--help|"") grep -E '^#( |$)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+
+REPO="$(find_repo)" || die "no *.xcodeproj found from $PWD upward. cd into an iOS project."
+[ -f "$REPO/.iosdev" ] && . "$REPO/.iosdev"
+
+XCODEPROJ="$(basename "$(compgen -G "$REPO"/*.xcodeproj | head -1)")"
+WT_NAME="$(basename "$REPO")"                       # worktree dir name = isolation key
+: "${SCHEME:=${XCODEPROJ%.xcodeproj}}"              # default scheme = project name
+REMOTE_DIR="$REMOTE_ROOT/$WT_NAME"                  # $HOME-relative on the Mac
+DD="$REMOTE_DIR/DerivedData"                        # kept on the Mac, never rsynced
+PRODUCTS="$DD/Build/Products/${CONFIGURATION}-iphoneos"
+
+need_mac() { [ -n "$MAC_HOST" ] || die "MAC_HOST not set. Edit $GLOBAL_CONF"; }
+rsh() { ssh -o BatchMode=yes "$MAC_HOST" "$@"; }
+
+# ---------- commands ----------
+cmd_sync() {
+  need_mac
+  info "sync $WT_NAME → $MAC_HOST:$REMOTE_DIR"
+  rsh "mkdir -p '$REMOTE_DIR'"
+  rsync -az --delete \
+    --exclude '.git' --exclude 'DerivedData' --exclude 'build' \
+    --exclude '.build' --exclude '*.xcuserstate' --exclude '.DS_Store' \
+    "$REPO"/ "$MAC_HOST:$REMOTE_DIR"/
+  ok "synced"
+}
+
+cmd_build() {
+  cmd_sync
+  need_mac
+  info "build $SCHEME [$CONFIGURATION] on $MAC_HOST"
+  local team=""
+  [ -n "$DEVELOPMENT_TEAM" ] && team="DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM"
+  # xcbeautify on the Mac if present, else raw xcodebuild output
+  rsh "source ~/.config/iosdev/unlock.sh 2>/dev/null; cd '$REMOTE_DIR' && set -o pipefail && xcodebuild \
+        -project '$XCODEPROJ' -scheme '$SCHEME' -configuration '$CONFIGURATION' \
+        -destination 'generic/platform=iOS' -derivedDataPath DerivedData \
+        -allowProvisioningUpdates $team build \
+      | (command -v xcbeautify >/dev/null && xcbeautify || cat)"
+  ok "built"
+}
+
+_app_path() { rsh "ls -dt '$PRODUCTS'/*.app 2>/dev/null | head -1"; }
+
+cmd_run() {
+  local launch=0; [ "${1:-}" = "--launch" ] && launch=1
+  cmd_build
+  need_mac
+  local app; app="$(_app_path)"; [ -n "$app" ] || die "no .app in $PRODUCTS"
+  case "$INSTALL_MODE" in
+    mac)
+      [ -n "$DEVICE_UDID" ] || die "DEVICE_UDID not set (run: iosdev udid)"
+      info "install → device $DEVICE_UDID (devicectl)"
+      rsh "xcrun devicectl device install app --device '$DEVICE_UDID' '$app'"
+      if [ "$launch" = 1 ]; then
+        [ -n "$BUNDLE_ID" ] || die "--launch needs BUNDLE_ID in $REPO/.iosdev"
+        rsh "xcrun devicectl device process launch --device '$DEVICE_UDID' '$BUNDLE_ID'"
+      fi
+      ;;
+    arch)
+      command -v ideviceinstaller >/dev/null || die "arch mode needs: sudo pacman -S ideviceinstaller"
+      info "package .ipa on Mac, pull to Arch, install over USB"
+      rsh "cd '$PRODUCTS' && rm -rf Payload app.ipa && mkdir Payload && cp -R *.app Payload/ && zip -qry app.ipa Payload"
+      rsync -az "$MAC_HOST:$PRODUCTS/app.ipa" /tmp/iosdev-app.ipa
+      ideviceinstaller -i /tmp/iosdev-app.ipa
+      ;;
+    *) die "unknown INSTALL_MODE=$INSTALL_MODE (use: mac | arch)";;
+  esac
+  ok "installed"
+}
+
+cmd_logs() {
+  case "$INSTALL_MODE" in
+    mac)  need_mac; [ -n "$DEVICE_UDID" ] || die "DEVICE_UDID not set";
+          info "device console (ctrl-c to stop)"
+          rsh "xcrun devicectl device console --device '$DEVICE_UDID'" ;;
+    arch) info "idevicesyslog (ctrl-c to stop)"; idevicesyslog ;;
+  esac
+}
+
+cmd_udid() {
+  if [ "$INSTALL_MODE" = arch ]; then
+    info "USB devices on this Arch box:"; idevice_id -l
+  else
+    need_mac; info "devices visible to the Mac:"
+    rsh "xcrun devicectl list devices 2>/dev/null || xcrun xctrace list devices"
+  fi
+}
+
+cmd_watch() {
+  command -v inotifywait >/dev/null || die "watch needs: sudo pacman -S inotify-tools"
+  info "watching $REPO — save a file to rebuild+install"
+  cmd_run "$@" || true
+  while inotifywait -qr -e modify,create,delete,move \
+        --exclude '(\.git|DerivedData|build|\.build|xcuserdata)' "$REPO" >/dev/null; do
+    echo; info "change detected — rebuilding"; cmd_run "$@" || true
+  done
+}
+
+cmd_doctor() {
+  info "repo:        $REPO"
+  info "worktree:    $WT_NAME  (scheme: $SCHEME, config: $CONFIGURATION)"
+  info "install:     $INSTALL_MODE"
+  if [ -z "$MAC_HOST" ]; then
+    info "MAC_HOST not set yet — edit $GLOBAL_CONF. (Arch-side autodetect OK.)"
+    return 0
+  fi
+  info "remote dir:  $MAC_HOST:~/$REMOTE_DIR"
+  rsh 'echo ok' >/dev/null 2>&1 && ok "ssh $MAC_HOST reachable" || die "cannot ssh $MAC_HOST"
+  rsh 'xcodebuild -version' >/dev/null 2>&1 && ok "xcodebuild present on Mac" || die "xcodebuild not found on Mac (install Xcode + xcode-select)"
+  rsh 'command -v xcbeautify >/dev/null' && ok "xcbeautify present (pretty logs)" || info "xcbeautify missing on Mac (raw logs) — brew install xcbeautify"
+  if [ "$INSTALL_MODE" = mac ]; then
+    if [ -n "$DEVICE_UDID" ]; then ok "DEVICE_UDID set"; else info "DEVICE_UDID empty — run: iosdev udid"; fi
+  fi
+}
+
+case "${1:-}" in
+  sync)   cmd_sync ;;
+  build)  cmd_build ;;
+  run)    shift; cmd_run "$@" ;;
+  logs)   cmd_logs ;;
+  udid)   cmd_udid ;;
+  watch)  shift; cmd_watch "$@" ;;
+  doctor) cmd_doctor ;;
+  ""|-h|--help) grep -E '^#( |$)' "$0" | sed 's/^# \{0,1\}//' ;;
+  *) die "unknown command: $1  (try: iosdev --help)";;
+esac

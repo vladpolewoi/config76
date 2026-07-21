@@ -6,3 +6,8 @@ local.lua
 
 # nvim runtime state (not config)
 last_colorscheme.txt
+
+# iosdev — Mac login password for headless keychain unlock (NEVER commit)
+keychain-pw
+# iosdev — machine-local config (holds device UDID); commit config.example instead
+arch/.config/iosdev/config

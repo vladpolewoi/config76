@@ -1,0 +1,14 @@
+# iosdev config — copy to `config` (machine-local, gitignored) and fill in.
+#
+# MAC_HOST     ssh alias of your Mac (define HostName/User in ~/.ssh/config).
+# DEVICE_UDID  run `iosdev udid`, paste the target device's UDID here.
+# INSTALL_MODE mac  = install via devicectl on the Mac (device on/paired to Mac)
+#              arch = build on Mac, pull .ipa, install over USB here (needs ideviceinstaller)
+
+MAC_HOST=mac
+REMOTE_ROOT=iosbuild
+DEVICE_UDID=
+INSTALL_MODE=mac
+CONFIGURATION=Debug
+# DEVELOPMENT_TEAM is per-project — set it in each repo's .iosdev only if the
+# project doesn't already carry a team in its build settings.
