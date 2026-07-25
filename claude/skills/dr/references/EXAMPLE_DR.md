@@ -6,9 +6,8 @@ DR ID: DR-CS2024-2026-RZIK-7
 
 
 
-| RC ID | RC-CS2024-2026-RZIK-7 |
-| --- | --- |
 | SRS ID | SRS-CS2024-2026-RZIK-7 |
+| --- | --- |
 | ADR ID | n/a |
 | External ID | RZIK-7 |
 | Рецензент | Килинник Михаил |

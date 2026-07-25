@@ -4,9 +4,8 @@ Development Review (DR)
 
 DR ID: DR-CS2024-2026-<EXTERNAL_ID>-<FE|BE|DEV>
 
-| RC ID | RC-CS2024-2026-<EXTERNAL_ID> |
-| --- | --- |
 | SRS ID | SRS-CS2024-2026-<EXTERNAL_ID> (БФТ: <doc-link>) |
+| --- | --- |
 | ADR ID | n/a |
 | External ID | <EXTERNAL_ID> |
 | Рецензент | Полевой Владислав |

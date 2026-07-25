@@ -67,7 +67,9 @@ DD="$REMOTE_DIR/DerivedData"                        # kept on the Mac, never rsy
 PRODUCTS="$DD/Build/Products/${CONFIGURATION}-iphoneos"
 
 need_mac() { [ -n "$MAC_HOST" ] || die "MAC_HOST not set. Edit $GLOBAL_CONF"; }
-rsh() { ssh -o BatchMode=yes "$MAC_HOST" "$@"; }
+# unlock.sh exports DEVELOPER_DIR (Xcode-beta) above its keychain early-return,
+# so every remote xcrun/devicectl resolves — not just the build.
+rsh() { ssh -o BatchMode=yes "$MAC_HOST" "source ~/.config/iosdev/unlock.sh 2>/dev/null; $*"; }
 
 # ---------- commands ----------
 cmd_sync() {

@@ -35,11 +35,13 @@ Resume by reading `WORKLOG.md` frontmatter `STATUS:` and jumping to the matching
 
 ## Stage 1 — INTAKE
 
-**Goal:** materialize `~/docspacevault/Tasks/<KLNA>/` with `WORKLOG.md` (with frontmatter), `RC.md`.
+**Goal:** materialize `~/docspacevault/Tasks/<KLNA>/` with `WORKLOG.md` (with frontmatter), `SRS.md`.
+
+> **Reglament 5.4:** the Карточка запроса (RC) is abolished — merged into the БФТ. The single task identifier is the **SRS ID**; `BOARD`/`KLNA-NNN` is the **External ID**. Everywhere this skill said `RC`, read `SRS`.
 
 1. If folder already exists and `WORKLOG.md` has a non-`initialized` STATUS, resume — do not re-intake unless user passed `new`.
 2. Ask user for (one prompt, all fields, accept paste):
-   - RC (e.g. `RC-CLDR-2026-005`) or `n/a`
+   - SRS ID (e.g. `SRS-CLDR-2026-005`) or `n/a`
    - REQ (e.g. `FR-01`) or `n/a` until known
    - OWNER — **always `Арсений Колесниченко`**. Vlad commits on his behalf; OWNER is the task owner, never the committer. Do not prompt unless user explicitly overrides.
    - MODULE (one of: Disk, Management, Mail, Calendar, Contacts, Projects, Pages, Forms)
@@ -48,15 +50,15 @@ Resume by reading `WORKLOG.md` frontmatter `STATUS:` and jumping to the matching
    - SOURCE (`bug report` | `feature request` | `improvement`)
    - AC list (paste — one per line, format `AC-NN: <text>`)
 3. Write `WORKLOG.md` with the schema below, STATUS=`initialized`.
-4. Write `RC.md` from the RC paste (or skeleton `# RC: <RC>\n\nTBD — fill from PM` if user didn't have it).
+4. Write `SRS.md` from the SRS paste (or skeleton `# SRS: <SRS ID>\n\nTBD — fill from БФТ` if user didn't have it).
 5. Confirm folder created, files written. Advance STATUS → `planning`.
 
 ### WORKLOG.md frontmatter schema
 
 ```yaml
 ---
-KLNA: KLNA-NNN              # required, format KLNA-\d{3,}
-RC: RC-CLDR-2026-NNN | n/a  # required
+KLNA: KLNA-NNN              # required, format KLNA-\d{3,} (== External ID)
+SRS: SRS-CLDR-2026-NNN | n/a # required (5.4: replaces RC)
 REQ: FR-NN | NFR-NN | n/a   # required
 OWNER: <full name>          # required
 MODULE: Calendar            # required, one of the 8 modules
@@ -146,7 +148,7 @@ Body template:
 • <bullet>
 • <bullet>
 
-RC: <from frontmatter>
+SRS: <from frontmatter>
 REQ: <from frontmatter>
 OWNER: <from frontmatter>
 PUBLIC: <from frontmatter>
@@ -195,14 +197,14 @@ Inspect:
 1. COMMIT REGULATION COMPLIANCE — for every commit in `git log origin/stage..<branch>`:
    • Header: `<Module>: <description>`, no gitmoji, no banned words (WIP, tmp, fix alone, misc, правки, разное)
    • Body has all three Russian sections in order: `Что изменено`, `Почему`, `Что проверено`
-   • Mandatory trailers present: RC, REQ, OWNER, PUBLIC, BOARD, TEST, DOC
+   • Mandatory trailers present: SRS, REQ, OWNER, PUBLIC, BOARD, TEST, DOC (5.4: RC→SRS)
    • PUBLIC: English only, single line, no URLs, no org names, no branch names, no `Merge pull request`, no `Co-Authored-By`
    • No AI artifacts: no `🤖`, no `Co-Authored-By`, no `Generated with`, no `Claude`
 
 2. DOC COMPLETENESS — read vault folder:
    • WORKLOG.md frontmatter fields all populated (no TBDs in required fields)
    • WORKLOG.md body sections all have real content (Analysis, Decisions, Alternatives, Code Zones, Implementation Notes, Testing, Risks)
-   • RC.md exists
+   • SRS.md exists
 
 3. AC TRACEABILITY:
    • Collect all AC IDs from WORKLOG frontmatter.
@@ -280,7 +282,7 @@ an uncovered AC, do not paper over it — stop and resolve upstream.
    ```
 3. PR title: same as the leading commit's header (`<Module>: <desc>`), ≤ 70 chars.
 4. PR body: load `.github/PULL_REQUEST_TEMPLATE.md`, fill from WORKLOG + SC. Format per memory:
-   - Full RC reference (`<rc_doc>-<rc_id>` style)
+   - Full SRS reference (`<srs_doc>-<srs_id>` style; RC abolished in 5.4)
    - Plain FR/AC list, no bold + em-dash decoration
    - No AI signatures
 5. **Wait for user approval before each command.**
@@ -316,7 +318,7 @@ Tokens:   <total in/out from TOKEN_LOG, by stage>
 
 **Comments render as HTML** (same as task descriptions — see [[feedback_board_task_format]]): angle-bracket generics like `Widget<T>` get stripped in display. Cosmetic for commit bodies; escape `<`/`>` only if it matters.
 
-**SC docx generator** (house-style audit artifact, 5 sections: Таблица решений / Пояснения для тестирования / Known Issues / Список коммитов / Контрольная запись поставки — NOT the 9-section SC.md): adapt `~/docspacevault/Tasks/_refactor-bundle/build_sc_bundle.py` (copy its styling helpers verbatim), set `REF` = the task's own `SRS-*.docx` (style inheritance), `OUT` = `<task>/SC-<rc_id>.docx`; populate §1 per-AC (FR/NFR + SOL-id + решение, mark deferred/narrowed ACs) and §4 from the commit list. Run with `/home/user76/Downloads/OLD/.venv/bin/python3` — it has `python-docx`; the Calendar-App `.venv` does NOT.
+**SC docx generator** (house-style audit artifact, 5 sections: Таблица решений / Пояснения для тестирования / Known Issues / Список коммитов / Контрольная запись поставки — NOT the 9-section SC.md): adapt `~/docspacevault/Tasks/_refactor-bundle/build_sc_bundle.py` (copy its styling helpers verbatim), set `REF` = the task's own `SRS-*.docx` (style inheritance), `OUT` = `<task>/SC-<external_id>.docx`; populate §1 per-AC (FR/NFR + SOL-id + решение, mark deferred/narrowed ACs) and §4 from the commit list. **5.4: the §4 «Список коммитов» grid and §5 «Контрольная запись поставки» must carry репозиторий (full path) + Ref (branch/tag) alongside the Commit SHA** — §4 header becomes `["SOL ID", "Репозиторий", "Ref", "Commit SHA", "Описание"]`. Drop the old `RC ID` header row from the label table (keep `SRS ID` + `External ID`). Run with `/home/user76/Downloads/OLD/.venv/bin/python3` — it has `python-docx`; the Calendar-App `.venv` does NOT.
 
 ## Token usage logging
 
@@ -363,5 +365,5 @@ If `/klna` is invoked on a folder whose STATUS doesn't match completed artifacts
 - Push to `main` (never — base is always `stage`).
 - Touch `.gitignore` (user decision per memory).
 - Create AI artifacts in the repo.
-- Run MCP writes (deferred — manual RC paste).
+- Run MCP writes (deferred — manual SRS paste).
 - Schedule itself, batch tasks, or run multiple KLNAs in parallel.

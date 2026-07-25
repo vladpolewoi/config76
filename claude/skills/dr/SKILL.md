@@ -31,7 +31,7 @@ Output lives in `~/docspacevault/Tasks/<KEY>/`: `DR.md` (source of truth) + `DR-
 
 For each task key:
 1. `mcp__projects__get_task` → read description and the **## Attachments** list (ids + names). The newer MCP exposes `download_attachment`; if attachments aren't listed, re-fetch get_task (the field was added).
-2. `mcp__projects__download_attachment idOrKey=<KEY> dir=~/docspacevault/Tasks/<KEY>/src` → saves all files (typically `01_RequestCard*.docx` + `02_БФТ*.docx`).
+2. `mcp__projects__download_attachment idOrKey=<KEY> dir=~/docspacevault/Tasks/<KEY>/src` → saves all files. **Reglament 5.4:** the Карточка запроса (RC) is abolished and folded into the БФТ header, so the single source doc is the **БФТ** — which now ships in **two forms**: `основная` (CR + complex bugs, full FR/NFR set) and `мини` (simple bugs/ЗНИ, one requirement + AC). A separate `01_RequestCard*.docx` may still appear on older tasks (legacy) but is no longer authoritative.
 3. `mcp__projects__list_comments` — attachments/clarifications sometimes arrive as comments.
 4. First time only / if format unsure: read `references/EXAMPLE_DR.md` (the manager's gold example) to match structure and altitude.
 
@@ -41,7 +41,7 @@ Convert each `.docx` to readable markdown so you can analyse it:
 ```
 <venv>/bin/python3 tools/docx2md.py "<src>/02_БФТ….docx" "<KEY>/_md/BFT.md"
 ```
-Read the RequestCard (business framing, External ID, links) and the **БФТ** in full — every BR / FR / NFR / AC / Scope / DoD. The БФТ is the spec; the RequestCard is context.
+Read the **БФТ** in full — its header (SRS ID + External ID + business framing + links) and every BR / FR / NFR / AC / Scope / DoD. Under 5.4 the БФТ header *is* the former RequestCard, so it carries both context and spec. For a bug, note the **Severity S1–S4** block (objective, one per doc, lives in the БФТ); priority is not in the doc — it's on the board.
 
 ## Stage 2 — GROUND (the differentiator)
 
@@ -66,7 +66,7 @@ Then decide:
 ## Stage 4 — AUTHOR DR
 
 Copy `templates/DR_TEMPLATE.md` to `~/docspacevault/Tasks/<KEY>/DR.md` and fill it. Keep the exact section structure (the docx generator parses it):
-- Title block + meta table (RC ID / SRS ID / ADR ID / External ID / Рецензент / Дата / Решение).
+- Title block + meta table (SRS ID / ADR ID / External ID / Рецензент / Дата / Решение). **5.4: no RC ID row** — RC is abolished; SRS ID is the identifier.
 - Раздел A — findings table `№ | FR/NFR ID | Замечание | Критичность`.
 - Раздел B — effort table `FR/NFR ID | Задача | Роль | Часы | Допущения` + ИТОГО row.
 - Раздел C — `Вывод:` paragraph + numbered recommendations.

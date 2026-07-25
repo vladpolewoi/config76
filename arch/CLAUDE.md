@@ -1,43 +1,37 @@
 # Global Claude Config
 
-## Task Management
+## Token Protection Strategy
 
-Dev tasks are tracked in Obsidian vault:
-- **Vault path**: `/home/user76/vault76/`
-- **Task board**: `/home/user76/vault76/2026/Dev Tasks.md` (Kanban format)
-
-When user asks to:
-- "Add task" / "Add to backlog" → Add to Backlog column
-- "What's on my tasks?" → Read the task board
-- "Move X to done" → Move task to Done column
-- "Start working on X" → Move to In Progress
-
-**Token Protection Strategy**:
 - Before spawning 3+ parallel agents → **Ask for confirmation**
+- **Browser work** → delegate to the `browser-operator` subagent. Never call
+  `mcp__playwright__*` from the main thread — snapshots are huge and pollute context.
+  The subagent does the clicking and returns a text summary only.
+
+## iOS apps
+
+Build/sign/install iOS apps from Arch via the remote Mac — never try to run
+Xcode locally. Use the `iosdev` tool: `cd <ios-repo> && iosdev run`.
+Full flow, config, and troubleshooting: **`~/.config/iosdev/README.md`**
+(also `iosdev --help`). A new iOS app needs only a 2-line `<repo>/.iosdev`
+(SCHEME, BUNDLE_ID) — do NOT copy build docs into each project.
+
+## Credentials
+
+Every credential that cannot be regenerated for free — Apple `.p8` keys (ASC API, APNs),
+DB passwords, third-party API keys — belongs in **Bitwarden**, one folder per project.
+A copy on disk or in a `.env` is a working cache, never the backup. When a task produces
+such a credential, file it in the vault in the same session.
+
+- `bw` CLI is installed on both machines (Arch `~/.local/bin/bw`, Mac `/opt/homebrew/bin/bw`),
+  logged in to the EU server. Adding from either machine syncs to the other.
+- **Free tier has no file attachments** — uploading one fails with "Premium status is required".
+  Store key files as a hidden custom field holding base64
+  (`base64 < AuthKey_X.p8 | tr -d '\n'`), and put the `base64 -d` restore line in the notes.
+- Claude never handles the master password: Claude authors the `bw` script, Vlad runs it
+  in a real terminal so `bw unlock --raw` gets a TTY. Same for `.p12` export passphrases.
+- Items are secure notes (`type=2`) with custom fields; `type: 1` marks a field hidden.
 
 ## Commands
 
 Custom commands are in `.claude/commands/`:
 - `/task` - Structured development workflow
-
-## MCP servers & secrets
-
-Servers are **shared** in the repo-root `claude/mcp.json` and applied on every
-machine; `arch/.claude/mcp.json` is just an (empty) Arch overlay. See
-[`../claude/README.md`](../claude/README.md) for the full layout, merge, and
-server/prerequisite table. **Never hardcode secrets** — this repo is public;
-secrets are `${VAR}` refs expanded by Claude Code from the launching shell.
-
-- `consult` reads `${CONSULT_ANTHROPIC_API_KEY}` (an `sk-ant-...` key; also falls
-  back to a user-level `~/.consult-mcp/.env`, which wins over an empty/unexpanded
-  var); `telegram` reads `${TG_MCP_ALLOWLIST}` — the **path** to a JSON allowlist
-  file, not the ids themselves. Provide values via `secrets.env` (gitignored,
-  templated by `secrets.env.example`); the shared `.zshrc` auto-sources it on
-  shell init, so `claude` from a normal terminal already has them. Manual export
-  only if launching from a shell that never sourced it:
-  `set -a; source arch/secrets.env; set +a`.
-
-On a fresh machine, if an MCP server fails to start, check (1) its required
-secret env var is exported and (2) its code is built. `consult`, `projects`,
-`telegram` live in the private `mcp-servers` repo — clone to
-`~/code/mcp-servers` and build per each dir's `SETUP.md` (see `../claude/README.md`).
