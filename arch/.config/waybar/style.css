@@ -141,6 +141,9 @@ window#waybar {
 #custom-warp.connecting {
   color: @accent-yellow;
 }
+#custom-warp.warn {
+  color: @accent-yellow;
+}
 #custom-warp.error {
   color: @accent-red;
   opacity: 0.45;
