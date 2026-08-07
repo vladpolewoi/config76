@@ -89,6 +89,7 @@ window#waybar {
 #clock.date,
 #custom-weather,
 #clock.time,
+#custom-warp,
 #custom-tmux,
 #custom-claude,
 #cpu,
@@ -125,6 +126,24 @@ window#waybar {
   padding-right: 16px;
   padding-left: 16px;
   margin-right: 16px;
+}
+
+#custom-warp {
+  color: @accent-orange;
+  border-radius: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-right: 8px;
+}
+#custom-warp.off {
+  opacity: 0.4;
+}
+#custom-warp.connecting {
+  color: @accent-yellow;
+}
+#custom-warp.error {
+  color: @accent-red;
+  opacity: 0.45;
 }
 
 #custom-tmux {

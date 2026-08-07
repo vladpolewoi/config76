@@ -197,7 +197,7 @@ deploy_preview() {  # $1 = branch, $2 = slug
   # Lint + type-check + build the committed code IN the worktree; main tree untouched.
   ( cd "$PREVIEW_WT" && run_checks )
   gum spin --spinner dot --title "Building (base /previews/$slug/)..." -- \
-    bash -c "cd '$PREVIEW_WT' && npm run build:cicd --preview_link_uuid='previews/$slug'"
+    bash -c "cd '$PREVIEW_WT' && npm_config_preview_link_uuid='previews/$slug' npm run build:cicd"
   [[ -d "$wt_dist" ]] || { gum log --level error "Build dir not found: $wt_dist"; exit 1; }
   gum log --level info "Build: $(du -sh "$wt_dist" | cut -f1) ($(find "$wt_dist" -type f | wc -l) files)"
   gum spin --spinner dot --title "Creating remote dir..." -- \
