@@ -88,6 +88,6 @@ claude-models.sh
 .last-update-result.json
 .caveman-mode-log.jsonl
 tg-mcp
-Bitwarden CLI
+Bitwarden*
 configstore
 create-next-app-nodejs
