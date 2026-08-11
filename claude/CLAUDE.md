@@ -15,6 +15,22 @@ Full flow, config, and troubleshooting: **`~/.config/iosdev/README.md`**
 (also `iosdev --help`). A new iOS app needs only a 2-line `<repo>/.iosdev`
 (SCHEME, BUNDLE_ID) — do NOT copy build docs into each project.
 
+## Vlad's budget
+
+One source of truth: the **SQLite ledger on the iPhone** (Budget76 app —
+`~/code/budget76-ios`, owned by its `Vault` type). Everything else is a copy.
+
+- **"pull budget"** = `cd ~/code/budget76-ios && tools/pull-ledger.sh` →
+  refreshes the read-only working copy at
+  `~/vault76/04 Areas/Metier/Finance/budget76/db/ledger.sqlite` (the budget76
+  wiki in the Obsidian vault), inspect with `sqlite3`. Phone must be reachable
+  from the Mac. Never write to a snapshot, never push a database back to the
+  phone.
+- Any question about Vlad's spending/balances → pull first, then query.
+  A snapshot on disk is stale by definition.
+- `~/code/budget76` — the old web app; spec and reference only, its data is
+  historical, not current.
+
 ## Credentials
 
 Every credential that cannot be regenerated for free — Apple `.p8` keys (ASC API, APNs),
