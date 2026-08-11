@@ -26,10 +26,44 @@ remote build dir and warm DerivedData, so parallel worktrees never collide.
     iosdev run --launch  # …and open the app
     iosdev build         # build only (validate signing)
     iosdev sync          # rsync only
+    iosdev test          # sync + xcodebuild test on a simulator
     iosdev logs          # stream device console
     iosdev watch         # rebuild+install on every save (needs: pacman -S inotify-tools)
-    iosdev doctor        # check ssh / xcodebuild / device
+    iosdev doctor        # check ssh / xcodebuild / device / Mac disk
+    iosdev prune         # reclaim Mac disk (see below)
     iosdev udid          # list device UDIDs
+
+`iosdev test` takes extra xcodebuild flags verbatim — `iosdev test
+-only-testing:TendTests/HabitMathTests`. Destination defaults to iPhone 17 Pro; override with
+`TEST_DESTINATION=…`. It pins `-derivedDataPath` to the worktree: on the Mac's shared
+DerivedData two sessions collide and one dies as `** BUILD INTERRUPTED **`. The full log stays
+on the Mac (`~/iosbuild/<worktree>/test.log`) and only the verdict comes back — piping
+xcodebuild through `tail` returns tail's exit code, so a red suite reads as green.
+
+## Disk — this pipeline never cleaned up after itself
+
+Every worktree gets its own remote dir with a full DerivedData (~1–3 GB), and nothing ever
+removed them; simulators keep every app and log they are given. The Mac hit 100% on
+2026-08-11 and builds started failing as `disk I/O error`, `Distill failed for unknown
+reasons`, `The file "assetcatalog_dependencies_thinned" doesn't exist` — never as "out of
+space". A full disk also corrupts the DerivedData being written, so the first fix after
+freeing space is `rm -rf ~/iosbuild/<worktree>/DerivedData`.
+
+    iosdev prune                 # drop DerivedData from build dirs idle 14+ days
+    iosdev prune --days 30       # …different idle window
+    iosdev prune --hard          # remove those build dirs entirely, sources and all
+    iosdev prune --sims          # shut down booted simulators + delete unavailable ones
+
+Never prunes the current worktree. `--hard` deletes the Mac's copy of gitignored build files
+(`Secrets.xcconfig`, `.env`) — those mirrors are the only backup if a local worktree is gone.
+
+Two things `prune` deliberately leaves alone, both worth checking by hand when space is tight:
+
+- `~/Library/Developer/Xcode/iOS DeviceSupport/` — one multi-GB bundle per iOS build ever
+  attached (17 GB for three). Old iOS versions are dead weight; each regenerates on next connect.
+- Simulator device data — `du -sh ~/Library/Developer/CoreSimulator/Devices/*`, then
+  `xcrun simctl erase <udid>` on the fat ones. Nothing in this pipeline creates simulators:
+  the ~24 devices are the stock set Xcode ships per runtime, so the growth is data, not count.
 
 ## Config
 

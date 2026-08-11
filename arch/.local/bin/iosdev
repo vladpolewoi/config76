@@ -19,8 +19,10 @@
 #   iosdev build           # sync + incremental device build
 #   iosdev run             # build + install to device  (the main loop)
 #   iosdev run --launch    # build + install + launch the app
+#   iosdev test            # sync + run the test suite in this worktree's DerivedData
 #   iosdev logs            # stream device console
 #   iosdev watch           # rebuild+install on every source save (needs inotify-tools)
+#   iosdev prune           # reclaim Mac disk: stale build dirs, simulator leftovers
 set -euo pipefail
 
 # ---------- defaults ----------
@@ -127,6 +129,77 @@ cmd_run() {
   ok "installed"
 }
 
+cmd_test() {
+  cmd_sync
+  need_mac
+  local dest="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 17 Pro}"
+  info "test $SCHEME on $MAC_HOST ($dest)"
+  # -derivedDataPath keeps the run inside this worktree. Without it xcodebuild uses the Mac's
+  # shared DerivedData, where a second session's run collides with yours (BUILD INTERRUPTED)
+  # and the leftovers are never pruned. The log stays on the Mac and only the verdict comes
+  # back: piping xcodebuild through `tail` here would return tail's exit code, so a red suite
+  # would read as green.
+  rsh "cd '$REMOTE_DIR' && xcodebuild test \
+        -project '$XCODEPROJ' -scheme '$SCHEME' \
+        -destination '$dest' -derivedDataPath DerivedData $* \
+      > test.log 2>&1; echo \"EXIT=\$?\" >> test.log" || true
+  rsh "grep -E '\\*\\* TEST (SUCCEEDED|FAILED) \\*\\*|^EXIT=|error:' '$REMOTE_DIR/test.log' | tail -20"
+  info "full log: $MAC_HOST:~/$REMOTE_DIR/test.log"
+}
+
+# Nothing in this pipeline ever reclaims space: every worktree leaves a full DerivedData on the
+# Mac forever, and simulators keep every app and log they were ever given. Both filled the disk
+# to 100% (2026-08-11), which surfaces as bogus build errors — "disk I/O error", "Distill failed".
+cmd_prune() {
+  need_mac
+  local days=14 hard=0 sims=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --days) days="${2:?--days needs a number}"; shift 2 ;;
+      --hard) hard=1; shift ;;
+      --sims) sims=1; shift ;;
+      *) die "prune: unknown flag $1  (--days N | --hard | --sims)" ;;
+    esac
+  done
+
+  info "prune $MAC_HOST:~/$REMOTE_ROOT — idle ${days}+ days, keeping $WT_NAME"
+  ssh -o BatchMode=yes "$MAC_HOST" \
+    "source ~/.config/iosdev/unlock.sh 2>/dev/null; bash -s -- '$REMOTE_ROOT' '$days' '$hard' '$sims' '$WT_NAME'" <<'EOSH'
+set -u
+root="$HOME/$1"; days="$2"; hard="$3"; sims="$4"; keep="$5"
+free() { df -k / | awk 'NR==2{printf "%.1f", $4/1048576}'; }
+before="$(free)"
+
+[ -d "$root" ] && while IFS= read -r dir; do
+  [ -z "$dir" ] && continue
+  [ "$(basename "$dir")" = "$keep" ] && continue
+  if [ "$hard" = 1 ]; then
+    echo "  drop  $(basename "$dir")"
+    rm -rf "$dir"
+  elif [ -d "$dir/DerivedData" ]; then
+    echo "  clean $(basename "$dir")/DerivedData"
+    rm -rf "$dir/DerivedData"
+  fi
+done <<EOF
+$(find "$root" -maxdepth 1 -mindepth 1 -type d -mtime +"$days" 2>/dev/null)
+EOF
+
+if [ "$sims" = 1 ]; then
+  # Booted simulators keep growing; devices from an uninstalled runtime are pure waste.
+  echo "  shutdown booted simulators"
+  xcrun simctl shutdown all >/dev/null 2>&1 || true
+  echo "  delete unavailable simulators"
+  xcrun simctl delete unavailable >/dev/null 2>&1 || true
+fi
+
+echo "  free: ${before}G → $(free)G"
+EOSH
+  ok "pruned"
+  info "not touched (delete by hand if you need the space):"
+  info "  ~/Library/Developer/Xcode/iOS DeviceSupport/*  — one bundle per iOS build ever attached"
+  info "  xcrun simctl erase <udid>                      — wipes a simulator's apps + data"
+}
+
 cmd_logs() {
   case "$INSTALL_MODE" in
     mac)  need_mac; [ -n "$DEVICE_UDID" ] || die "DEVICE_UDID not set";
@@ -167,6 +240,11 @@ cmd_doctor() {
   rsh 'echo ok' >/dev/null 2>&1 && ok "ssh $MAC_HOST reachable" || die "cannot ssh $MAC_HOST"
   rsh 'xcodebuild -version' >/dev/null 2>&1 && ok "xcodebuild present on Mac" || die "xcodebuild not found on Mac (install Xcode + xcode-select)"
   rsh 'command -v xcbeautify >/dev/null' && ok "xcbeautify present (pretty logs)" || info "xcbeautify missing on Mac (raw logs) — brew install xcbeautify"
+  # A full Mac disk fails builds as "disk I/O error" / "Distill failed", never as "out of space".
+  local free_gb; free_gb="$(rsh "df -k / | awk 'NR==2{printf \"%.0f\", \$4/1048576}'" 2>/dev/null || echo "")"
+  if [ -n "$free_gb" ]; then
+    [ "$free_gb" -ge 15 ] && ok "Mac disk: ${free_gb}G free" || info "Mac disk: only ${free_gb}G free — run: iosdev prune [--hard] [--sims]"
+  fi
   if [ "$INSTALL_MODE" = mac ]; then
     if [ -n "$DEVICE_UDID" ]; then ok "DEVICE_UDID set"; else info "DEVICE_UDID empty — run: iosdev udid"; fi
   fi
@@ -175,6 +253,8 @@ cmd_doctor() {
 case "${1:-}" in
   sync)   cmd_sync ;;
   build)  cmd_build ;;
+  test)   shift; cmd_test "$@" ;;
+  prune)  shift; cmd_prune "$@" ;;
   run)    shift; cmd_run "$@" ;;
   logs)   cmd_logs ;;
   udid)   cmd_udid ;;
