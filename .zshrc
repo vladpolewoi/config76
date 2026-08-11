@@ -7,6 +7,12 @@ fi
 
 export PATH="$HOME/.local/bin:$HOME/.local/scripts:$PATH"
 
+# Impeccable (impeccable.style) phones home by default: a POST to /api/chosen after
+# every concept roll and a daily version poll. Both are pure telemetry — killing them
+# loses no function. Audited in flow76 T02 (runs/flow76-build/tickets/02).
+export IMPECCABLE_NO_TELEMETRY=1
+export IMPECCABLE_NO_UPDATE_CHECK=1
+
 # Export gitignored MCP/tool secrets (consult, telegram, projects) so `claude`
 # and its stdio MCP servers can expand the ${VAR} refs in claude/mcp.json.
 # The platform file lives next to this one: <repo>/{mac,arch}/secrets.env.
