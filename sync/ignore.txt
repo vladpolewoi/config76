@@ -91,3 +91,4 @@ tg-mcp
 Bitwarden*
 configstore
 create-next-app-nodejs
+spotify

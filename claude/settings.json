@@ -67,7 +67,7 @@
       "mcp__telegram__send_message"
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
