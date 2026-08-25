@@ -92,3 +92,5 @@ Bitwarden*
 configstore
 create-next-app-nodejs
 spotify
+redline76
+shot76

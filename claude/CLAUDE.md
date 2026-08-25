@@ -1,11 +1,45 @@
 # Global Claude Config
 
+## The machines
+
+Four devices, one LAN. Know which one a job belongs on before starting it.
+
+| Role | Machine | Details |
+|---|---|---|
+| Dev desktop | **Arch** — `quest76` | `192.168.100.107` (eno1, DHCP), GTX 1060 6 GB, 16 cores, 15 GB RAM, Hyprland/Wayland. Always on. Runs Claude Code. Holds every repo. |
+| Build host | **Mac** — ssh alias `mac` | `192.168.100.159`, Xcode-beta. Signs and installs iOS builds via `iosdev`. Often asleep — check reachability before depending on it. |
+| Phone | **iPhone 15 Pro Max** | iOS 27.0, Developer Mode on, paired to both Arch and the Mac. Owns the Budget76 ledger. |
+| Tablet | **iPad Air 11" (M2)** | Apple Pencil Pro. M2 ⇒ Apple Intelligence ⇒ `FoundationModels` available. |
+
+- **Source code lives on Arch only.** Anything needing the repo runs there — never assume the
+  Mac or a device has it.
+- **The Mac has an ancient rsync** that rejects modern flags. Use `tar cf - . | tar xf -` over
+  ssh instead.
+- **`sudo` has no TTY through Claude Code.** Hand Vlad the command to run in a real terminal.
+- **iOS 17+ killed `idevicescreenshot`** — `screenshotr` moved behind RemoteXPC. Pairing and
+  `ideviceinfo` still work; screenshots do not, DDI mounted or otherwise. Capture from the Mac
+  with `xcrun devicectl device capture screenshot`, which needs the phone `connected`, not
+  merely `available (paired)`.
+
 ## Token Protection Strategy
 
 - Before spawning 3+ parallel agents → **Ask for confirmation**
 - **Browser work** → delegate to the `browser-operator` subagent. Never call
   `mcp__playwright__*` from the main thread — snapshots are huge and pollute context.
   The subagent does the clicking and returns a text summary only.
+
+## Web search — use the self-hosted SearXNG
+
+**Default search engine for everything: `mcp__searxng__searxng_web_search`.**
+Read the pages it finds with `mcp__searxng__web_url_read`. This is Vlad's own
+instance — no per-query cost, no rate limit, no third party sees the queries.
+
+- Applies to research tasks, quick lookups, and doc-hunting alike.
+- **Subagents inherit this.** When spawning any agent that will search the web,
+  say so in its prompt — a fresh agent defaults to `WebSearch` otherwise.
+- Fall back to `WebSearch` / Tavily / Brave only when searxng errors or returns
+  nothing usable, and say which query needed the fallback.
+- `context7` still wins for library/framework/API docs — that is not a search.
 
 ## iOS apps
 
