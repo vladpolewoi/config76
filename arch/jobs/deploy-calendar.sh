@@ -117,12 +117,21 @@ prepare_preview_worktree() {  # $1 = branch
     git -C "$PROJECT_DIR" worktree add --detach "$PREVIEW_WT" HEAD
   fi
   gum spin --spinner dot --title "Fetching $branch..." -- git -C "$PROJECT_DIR" fetch origin "$branch" || true
+  # Prefer the local branch; fall back to the fetched remote ref (checkout --detach
+  # does not resolve a bare remote branch name, and a silent miss builds stale code).
+  local ref="$branch"
+  git -C "$PREVIEW_WT" rev-parse --verify --quiet "refs/heads/$branch" >/dev/null \
+    || ref="origin/$branch"
+  git -C "$PREVIEW_WT" rev-parse --verify --quiet "$ref^{commit}" >/dev/null \
+    || { gum log --level error "Branch not found locally or on origin: $branch"; exit 1; }
   gum spin --spinner dot --title "Checking out $branch (committed tip)..." -- bash -c "
     git -C '$PREVIEW_WT' reset --hard >/dev/null 2>&1 || true
-    git -C '$PREVIEW_WT' checkout --detach '$branch' &&
-    git -C '$PREVIEW_WT' reset --hard '$branch' &&
-    git -C '$PREVIEW_WT' clean -fd -e node_modules -e .preview-deps-hash >/dev/null 2>&1 || true
+    git -C '$PREVIEW_WT' checkout --detach '$ref' &&
+    git -C '$PREVIEW_WT' reset --hard '$ref'
   "
+  git -C "$PREVIEW_WT" clean -fd -e node_modules -e .preview-deps-hash >/dev/null 2>&1 || true
+  [[ "$(git -C "$PREVIEW_WT" rev-parse HEAD)" == "$(git -C "$PREVIEW_WT" rev-parse "$ref")" ]] \
+    || { gum log --level error "Worktree is not at $ref - refusing to build stale code"; exit 1; }
   gum log --level info "Worktree at $branch @ $(git -C "$PREVIEW_WT" rev-parse --short HEAD)"
   # Install deps only when package-lock changed (first run is slower).
   lock_hash="$(sha1sum "$PREVIEW_WT/package-lock.json" | cut -d' ' -f1)"
@@ -150,6 +159,8 @@ checkout_branch() {  # $1 = branch
     SWITCHED=false
   fi
   gum spin --spinner dot --title "Pulling latest..." -- git pull origin "$target"
+  [[ "$(git branch --show-current)" == "$target" ]] \
+    || { gum log --level error "Not on $target after checkout - aborting"; exit 1; }
   gum log --level info "On $target (latest)"
 }
 
@@ -204,7 +215,8 @@ deploy_preview() {  # $1 = branch, $2 = slug
     ssh "$SSH_HOST" "mkdir -p '$PREVIEW_BASE/$slug'"
   gum spin --spinner dot --title "Uploading preview..." -- \
     rsync -avz --delete "$wt_dist/" "$SSH_HOST:$PREVIEW_BASE/$slug/"
-  success "Deploy Complete!" "Mode: PREVIEW" "Branch: $branch" "Slug: $slug" \
+  success "Deploy Complete!" "Mode: PREVIEW" "Branch: $branch" \
+    "Commit: $(git -C "$PREVIEW_WT" log --oneline -1 HEAD)" "Slug: $slug" \
     "URL: https://$PUBLIC_HOST/previews/$slug/"
   if [[ "$NO_BOARD" != true ]]; then
     write_board_link "$TASK_KEY" "https://$PUBLIC_HOST/previews/$slug/"
