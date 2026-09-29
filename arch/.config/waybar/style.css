@@ -1,186 +1,181 @@
+/* ~/.config/waybar/style.css — Tokyo Night Moon frosted glass */
 @import "../utils/tokyonight-moon.css";
 
+/* ───────── base ───────── */
 * {
-  font-family: "Jetbrains Mono Bold";
-  font-weight: 600;
-  font-size: 18px;
+  font-family: "JetBrainsMono Nerd Font", "JetBrainsMono Nerd Font Mono", "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 15.5px;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+  transition: none;
 }
-
-
 
 window#waybar {
   background: transparent;
+  color: @fg;
 }
 
-#workspaces {
-  margin: 12px 0 0 12px;
-  background-color: @bg;
-  border-radius: 8px;
-  opacity: 0.95;
-}
-
-#workspaces button {
-  padding-left: 10px;
-  padding-right: 10px;
-  border-radius: 6px;
-}
-
-#workspaces button:nth-child(1) {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  color: @accent-green;
-}
-#workspaces button.active:nth-child(1) {
-  background-color: @accent-green;
-  color: @bg;
-}
-#workspaces button:nth-child(2) {
-  color: @accent-cyan;
-}
-#workspaces button.active:nth-child(2) {
-  background-color: @accent-cyan;
-  color: @bg;
-}
-#workspaces button:nth-child(3) {
-  color: @accent-blue;
-}
-#workspaces button.active:nth-child(3) {
-  background-color: @accent-blue;
-  color: @bg;
-}
-#workspaces button:nth-child(4) {
-  color: @accent-purple;
-}
-#workspaces button.active:nth-child(4) {
-  background-color: @accent-purple;
-  color: @bg;
-}
-#workspaces button:nth-child(5) {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  color: @accent-red;
-}
-#workspaces button.active:nth-child(5) {
-  background-color: @accent-red;
-  color: @bg;
-}
-
-#workspaces button:hover {
-  background: @bg;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  text-shadow: none;
-  transition: none;
-}
-
-#network {
-  margin-top: 6px;
-  margin-left: 8px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 0px;
-  border-radius: 8px;
-  transition: none;
-  color: @bg;
-  background: @bright-blue;
-}
-
-#clock.date,
+/* ───────── glass tile (shared) ─────────
+   fill alpha ≥ 0.26 everywhere so Hyprland ignore_alpha 0.1 blurs every pill
+   and leaves the fully-transparent gaps untouched. */
+#workspaces,
+#custom-music,
 #custom-weather,
 #clock.time,
+#clock.date,
+#network,
 #custom-warp,
 #custom-tmux,
 #custom-claude,
 #cpu,
 #memory,
 #pulseaudio {
-  margin-top: 12px;
-  background: @bg;
-  opacity: 0.95;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  padding: 3px 18px;
+  border-radius: 14px;
+
+  background-image:
+    linear-gradient(160deg, alpha(@fg, 0.06), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
+
+  /* one sharp 1px white rim all round, brightest on top, softest at the bottom */
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-top-color: rgba(255, 255, 255, 0.42);
+  border-bottom-color: rgba(255, 255, 255, 0.13);
+  box-shadow: none;
+
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
-/*MIDDLE*/
+/* ───────── workspaces ───────── */
+#workspaces {
+  margin-left: 12px;
+  padding: 0 5px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-purple, 0.08), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
+}
 
+#workspaces button {
+  margin: 4px 1px;
+  padding: 0 7px;
+  min-width: 16px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+#workspaces button:nth-child(1) { color: @accent-green; }
+#workspaces button:nth-child(2) { color: @accent-cyan; }
+#workspaces button:nth-child(3) { color: @accent-blue; }
+#workspaces button:nth-child(4) { color: @accent-purple; }
+#workspaces button:nth-child(5) { color: @accent-red; }
+
+#workspaces button.active {
+  color: @bg;
+  text-shadow: none;
+  border-top-color: alpha(@fg, 0.45);
+  border-bottom-color: alpha(@bg, 0.35);
+}
+#workspaces button.active:nth-child(1) { background-color: @accent-green; }
+#workspaces button.active:nth-child(2) { background-color: @accent-cyan; }
+#workspaces button.active:nth-child(3) { background-color: @accent-blue; }
+#workspaces button.active:nth-child(4) { background-color: @accent-purple; }
+#workspaces button.active:nth-child(5) { background-color: @accent-red; }
+
+#workspaces button:hover {
+  background: alpha(@fg, 0.10);
+  border-color: alpha(@fg, 0.18);
+  box-shadow: none;
+  outline: none;
+  text-shadow: none;
+  transition: none;
+}
+#workspaces button.active:hover { background-color: alpha(@fg, 0.90); }
+
+/* ───────── center ───────── */
 #clock.time {
   color: @accent-green;
-  border-radius: 8px;
-  padding-right: 16px;
-  padding-left: 16px;
+  padding: 0 20px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-green, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
 
-/*---*/
-
-/*RIGHT*/
-#clock.date {
-  color: @accent-cyan;
-  border-radius: 8px;
-  padding-right: 16px;
-  padding-left: 16px;
-  margin-right: 16px;
+/* ───────── right ───────── */
+#custom-music {
+  color: @accent-magenta;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-magenta, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
 
 #custom-weather {
   color: @accent-yellow;
-  border-radius: 8px;
-  padding-right: 16px;
-  padding-left: 16px;
-  margin-right: 16px;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-yellow, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
+
+#clock.date {
+  color: @accent-cyan;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-cyan, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
+}
+
+#network {
+  color: @accent-blue;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-blue, 0.12), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
+}
+#network.disconnected { color: @accent-red; }
 
 #custom-warp {
   color: @accent-orange;
-  border-radius: 8px;
-  padding-left: 14px;
-  padding-right: 14px;
-  margin-right: 8px;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-orange, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
-#custom-warp.off {
-  opacity: 0.4;
-}
-#custom-warp.connecting {
-  color: @accent-yellow;
-}
-#custom-warp.warn {
-  color: @accent-yellow;
-}
-#custom-warp.error {
-  color: @accent-red;
-  opacity: 0.45;
-}
+#custom-warp.off { opacity: 0.4; }
+#custom-warp.connecting,
+#custom-warp.warn { color: @accent-yellow; }
+#custom-warp.error { color: @accent-red; opacity: 0.45; }
 
 #custom-tmux {
   color: @accent-purple;
-  border-radius: 8px;
-  padding-left: 14px;
-  padding-right: 14px;
-  margin-right: 8px;
+  margin-right: 12px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-purple, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
-#custom-tmux.warn {
-  color: @accent-yellow;
-}
-#custom-tmux.empty {
-  opacity: 0.4;
-}
+#custom-tmux.warn { color: @accent-yellow; }
+#custom-tmux.empty { opacity: 0.4; }
 
 #custom-claude {
   color: @bright-green;
-  border-radius: 8px;
-  padding-left: 14px;
-  padding-right: 14px;
-  margin-right: 8px;
-  min-width: 104px;
+  margin-right: 12px;
+  min-width: 110px;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-green, 0.10), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
-#custom-claude.warn {
-  color: @accent-yellow;
-}
-#custom-claude.crit {
-  color: @bright-red;
-}
-#custom-claude.error {
-  color: @accent-red;
-  opacity: 0.45;
-}
+#custom-claude.warn { color: @accent-yellow; }
+#custom-claude.crit { color: @bright-red; }
+#custom-claude.error { color: @accent-red; opacity: 0.45; }
 #custom-claude.refreshing {
   color: @bright-cyan;
   animation: claude-pulse 0.45s ease-in-out infinite alternate;
@@ -189,33 +184,57 @@ window#waybar {
   color: @bright-green;
   animation: claude-flash 0.4s ease-out;
 }
-@keyframes claude-pulse {
-  from { opacity: 0.25; }
-  to   { opacity: 1.0; }
-}
-@keyframes claude-flash {
-  from { opacity: 0.15; }
-  to   { opacity: 1.0; }
-}
+@keyframes claude-pulse { from { opacity: 0.25; } to { opacity: 1.0; } }
+@keyframes claude-flash { from { opacity: 0.15; } to { opacity: 1.0; } }
 
+/* ───────── joined pill: cpu | memory | pulseaudio ───────── */
 #cpu {
   color: @bright-red;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  padding-left: 16px;
+  padding-left: 18px;
   padding-right: 12px;
+  border-radius: 14px 0 0 14px;
+  border-right-width: 0;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-red, 0.08), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
 #memory {
-  margin-left: 0px;
   color: @bright-yellow;
-  padding-right: 12px;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0 12px;
+  border-radius: 0;
+  border-left-width: 0;
+  border-right-width: 0;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-yellow, 0.08), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
 #pulseaudio {
   color: @bright-cyan;
-  padding-right: 16px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  min-width: 58px;
+  padding-left: 12px;
+  padding-right: 18px;
   margin-right: 12px;
-  min-width: 60px;
+  border-radius: 0 14px 14px 0;
+  border-left-width: 0;
+  background-image:
+    linear-gradient(160deg, alpha(@accent-cyan, 0.08), alpha(@fg, 0.00) 55%),
+    linear-gradient(180deg, alpha(@surface-2, 0.34), alpha(@bg, 0.26));
 }
-/*---*/
+#pulseaudio.muted { color: @fg-dim; }
+
+/* tooltips (calendar etc.): same glass as the tiles; Hyprland blur_popups blurs behind */
+tooltip {
+  background-image: linear-gradient(180deg, alpha(@surface-2, 0.62), alpha(@bg, 0.55));
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-top-color: rgba(255, 255, 255, 0.42);
+  border-bottom-color: rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+}
+tooltip label {
+  color: @fg;
+  font-size: 15px;
+  padding: 10px 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}

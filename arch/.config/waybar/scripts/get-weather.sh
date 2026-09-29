@@ -27,8 +27,25 @@ else
   update_cache
 fi
 
+# Indoor: latest row from the Xiaomi hygrometer logger (xiaomi-ble-logger.service).
+# Shown as "<wx> 16° / 23°  <hum> 47%": outdoor / indoor. Humidity turns orange outside
+# the 40–60% target; the indoor part is hidden after 30 min without data.
+CLIMATE_CSV="$HOME/vault76/04 Areas/Health/Home Sensors/data/climate.csv"
+CLIMATE_MAX_AGE=1800
+
+indoor() {
+  [[ -s "$CLIMATE_CSV" ]] || return
+  local ts temp hum color
+  IFS=, read -r ts temp hum _ < <(tail -n1 "$CLIMATE_CSV")
+  [[ "$hum" =~ ^[0-9.]+$ ]] || return
+  (( $(date +%s) - $(date -d "$ts" +%s) > CLIMATE_MAX_AGE )) && return
+  color='#a0eaff'
+  (( ${hum%.*} < 40 || ${hum%.*} > 60 )) && color='#ffac84'
+  printf " <span color='#636da6'>/</span> <span color='#c8d3f5'>%.0f°</span>  <span color='%s'>\ue373 %.0f%%</span>" "$temp" "$color" "$hum"
+}
+
 if [[ ! -s "$CACHE_FILE" ]] || ! jq -e '.current.weather_code' "$CACHE_FILE" >/dev/null 2>&1; then
-  echo $' --'
+  echo $' --'"$(indoor)"
   exit 0
 fi
 
@@ -72,4 +89,4 @@ case "$CODE" in
   *)        ICON=$'' ;;
 esac
 
-echo "$ICON  ${TEMP}°C"
+echo "$ICON ${TEMP}°$(indoor)"

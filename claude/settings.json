@@ -39,7 +39,6 @@
       "Bash(uname *)",
       "Bash(date)",
       "Bash(ps *)",
-      "Bash(env)",
       "Bash(printenv *)",
       "Bash(which *)",
       "Bash(type *)",
@@ -89,7 +88,8 @@
     "caveman@caveman": true,
     "vgv-wingspan@very-good-claude-code-marketplace": false,
     "frontend-design@claude-plugins-official": false,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "cloudflare@cloudflare": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -103,11 +103,65 @@
         "source": "github",
         "repo": "VeryGoodOpenSource/very_good_claude_marketplace"
       }
+    },
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
     }
   },
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-fable-5": {
+      "effortLevel": "medium"
+    },
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    },
+    "claude-opus-5": {
+      "effortLevel": "high"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(tools/pull-ledger.sh push:*) in ~/code/budget76-ios — the ledger pull script is documented as read-only; any write-back path is a footgun the CLAUDE.md explicitly forbids"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Primary use of Claude Code**: software development (personal/hobby iOS project)",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: private (vladpolewoi/budget76-ios, confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: Bitwarden (`bw` CLI, EU server) — credentials are secure notes with custom fields; Claude never handles the master password, `bw unlock` must be run by the user in a real terminal with a TTY",
+      "**Default / protected branches**: default branch unknown (origin/HEAD unset); no protected branches or rulesets listed via gh (rulesets not queryable here — do not assume unprotected)",
+      "**CI/CD deploy targets**: None configured — iOS builds go through the remote Mac (`ssh mac`, `iosdev`), not a CI/CD pipeline",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine (Arch desktop `quest76`) with open internet and LAN access to a Mac build host and iPhone/iPad; source code lives on Arch only",
+      "**Source control**: The trusted repo (github.com:vladpolewoi/budget76-ios.git) and its remote only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: Remote Mac build host (ssh alias `mac`, `192.168.100.159`) for iOS builds/tests via `iosdev`; iPhone 15 Pro Max as the Budget76 ledger owner (SQLite source of truth, read-only pulls via `tools/pull-ledger.sh`)",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: personal financial ledger data — `~/vault76/04 Areas/Metier/Finance/budget76/db/ledger.sqlite` (read-only snapshot pulled from the phone) and the live SQLite database on the iPhone (Budget76 app, Vault-owned); credentials (Apple .p8 keys, DB passwords, API keys) belong only in Bitwarden, never committed; share only with Vlad",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: iOS app development for budget76-ios (personal/hobby project) — routine work under this repo",
+      "**Trusted repo**: /home/user76/code/budget76-ios (github.com:vladpolewoi/budget76-ios.git), private",
+      "**Org-specific CLIs**: `iosdev` (remote iOS build/sign/install via the Mac — never run Xcode or xcodebuild locally), `bw` (Bitwarden CLI, both machines), `tools/pull-ledger.sh` (read-only ledger snapshot pull — never write back to the phone)",
+      "Routine under ~/code/budget76-ios/ prefix: builds, tests, and ledger inspection via the documented iosdev/tools flows"
+    ]
+  },
   "voiceEnabled": true
 }

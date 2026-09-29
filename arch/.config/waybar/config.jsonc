@@ -59,7 +59,7 @@
   },
 
   "custom/weather": {
-    "interval": 900,
+    "interval": 300,
     "format": "{}",
     "exec": "~/.config/waybar/scripts/get-weather.sh",
     "return-type": "plain",
@@ -69,19 +69,25 @@
   "clock#date": {
     "format": "<span></span> {:%d %a, %B}",
     "interval": 60,
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "tooltip-format": "<tt>{calendar}</tt>",
     "calendar": {
       "mode": "month",
       "weeks-pos": "right",
-      "months": 3,
+      "first-day-of-week": 1,
+      "iso8601": true,
       "on-scroll": 1,
       "format": {
-        "months": "<span color='#ffead3'><b>{}</b></span>",
-        "days": "<span color='#ecc6d9'><b>{}</b></span>",
-        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
-        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
-        "today": "<span color='#ff6699'><b><u>{}</u></b></span>",
+        "months": "<span color='#82aaff'><b>{}</b></span>",
+        "days": "<span color='#c8d3f5'>{}</span>",
+        "weeks": "<span color='#636da6'>W{}</span>",
+        "weekdays": "<span color='#ffc777'><b>{}</b></span>",
+        "today": "<span background='#86e1fc' color='#222436'><b>{}</b></span>",
       },
+    },
+    "actions": {
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down",
+      "on-click-right": "shift_reset",
     },
   },
 

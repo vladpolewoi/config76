@@ -94,3 +94,6 @@ create-next-app-nodejs
 spotify
 redline76
 shot76
+xiaomi-ble
+.wrangler
+skills/synced

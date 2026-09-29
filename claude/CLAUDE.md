@@ -28,6 +28,31 @@ Four devices, one LAN. Know which one a job belongs on before starting it.
   `mcp__playwright__*` from the main thread — snapshots are huge and pollute context.
   The subagent does the clicking and returns a text summary only.
 
+## Model routing
+
+**Opus 5 is the daily driver.** It runs every agentic loop in the CLI — edits,
+run/test cycles, tools, MCP, browser. On the subscription, at effort `high`.
+Do not switch the driver to Fable for "hard" work; raise effort instead —
+`xhigh`/`max` on Opus 5 costs a fraction of a Fable turn and usually closes the gap.
+Effort is the first lever, model is the last.
+
+**Fable 5.1 is never the driver.** It bills 2× Opus per token ($10/$50 vs $5/$25),
+its thinking is always on, and its turns run long — so in a loop it drains the weekly
+cap several times faster for work Opus finishes. Reach it only as a **one-shot
+advisor**, via `mcp__consult__consult` (off-subscription key, own spend log):
+
+- Architecture/design tradeoffs, hard algo/math/proof, deep debug from a code+error
+  dump, subtle-bug review of a diff, long-doc synthesis, "think hard about X".
+- **UI 0→1** — a new screen, new component, or from-scratch redesign: Fable *authors*
+  the actual SwiftUI, Opus integrates it **verbatim and does not restyle** (restyling
+  reintroduces Opus's taste and loses the polish). 1→n — tweaks, colors, spacing,
+  wiring inside an existing screen — stays on Opus; the structure constrains it.
+- Design consults take a screenshot; Fable has strong vision. Loop: Fable writes →
+  sim screenshot → paste back → refine.
+
+**Subagents run cheap.** Haiku 4.5 or Sonnet 5 at effort `low` for search, scribe, and
+mechanical fan-out work. Never spawn a Fable subagent.
+
 ## Web search — use the self-hosted SearXNG
 
 **Default search engine for everything: `mcp__searxng__searxng_web_search`.**
@@ -51,19 +76,25 @@ Full flow, config, and troubleshooting: **`~/.config/iosdev/README.md`**
 
 ## Vlad's budget
 
-One source of truth: the **SQLite ledger on the iPhone** (Budget76 app —
-`~/code/budget76-ios`, owned by its `Vault` type). Everything else is a copy.
+Two databases, and knowing which one is answering matters. The **web app's**
+is where entries still land; the **iPhone's** is round two's, seeded from it.
 
 - **"pull budget"** = `cd ~/code/budget76-ios && tools/pull-ledger.sh` →
   refreshes the read-only working copy at
-  `~/vault76/04 Areas/Metier/Finance/budget76/db/ledger.sqlite` (the budget76
-  wiki in the Obsidian vault), inspect with `sqlite3`. Phone must be reachable
-  from the Mac. Never write to a snapshot, never push a database back to the
-  phone.
-- Any question about Vlad's spending/balances → pull first, then query.
-  A snapshot on disk is stale by definition.
-- `~/code/budget76` — the old web app; spec and reference only, its data is
-  historical, not current.
+  `~/vault76/04 Areas/Metier/Finance/budget76/db/ios-ledger.sqlite` (the
+  budget76 wiki in the Obsidian vault), inspect with `sqlite3`. Phone must be
+  reachable from the Mac. Never write to a snapshot, never push a database back
+  to the phone.
+- **The live ledger is still the web app's**: `~/code/budget76/server/data/`
+  `budget76.db`, which takes today's entries — round two does not yet. So a
+  question about spending or balances is answered from there (read it through
+  `budget76-ios/tools/ledger.py`, which snapshots it rather than touching the
+  file the server holds open), and `ios-ledger.sqlite` answers questions about
+  what the *app* is showing.
+- The two swap places the day round two takes entry. Until then the iOS app's
+  numbers are a seed generated from the web ledger, not a second ledger.
+- `~/code/budget76` — the web app: the spec for every behaviour, and for now
+  the data as well.
 
 ## Credentials
 
