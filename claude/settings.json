@@ -59,26 +59,15 @@
       "Bash(git rev-parse *)",
       "Bash(git ls-files *)",
       "Bash(git config --get *)",
-      "Bash(git config --list)"
+      "Bash(git config --list)",
+      "mcp__pencil"
     ],
     "ask": [
       "mcp__telegram__prepare_send",
       "mcp__telegram__send_message"
     ]
   },
-  "model": "opus[1m]",
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"systemMessage\": \"CAVEMAN MODE ACTIVE (full). Rules: Drop articles/filler/pleasantries/hedging. Fragments OK. Short synonyms. Pattern: [thing] [action] [reason]. [next step]. Not: \\u0027Sure! I\\u0027d be happy to help you with that.\\u0027 Yes: \\u0027Bug in auth middleware. Fix:\\u0027 Code/commits/security: write normal. User says \\u0027normal\\u0027 or \\u0027stop caveman\\u0027 to deactivate.\"}'"
-          }
-        ]
-      }
-    ]
-  },
+  "model": "opus",
   "enableWorkflows": true,
   "statusLine": {
     "type": "command",
@@ -86,22 +75,13 @@
   },
   "enabledPlugins": {
     "caveman@caveman": true,
-    "vgv-wingspan@very-good-claude-code-marketplace": false,
-    "frontend-design@claude-plugins-official": false,
-    "swift-lsp@claude-plugins-official": true,
-    "cloudflare@cloudflare": true
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
       "source": {
         "source": "github",
         "repo": "JuliusBrussee/caveman"
-      }
-    },
-    "very-good-claude-code-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "VeryGoodOpenSource/very_good_claude_marketplace"
       }
     },
     "cloudflare": {
@@ -123,7 +103,10 @@
       "effortLevel": "high"
     },
     "claude-opus-5-5": {
-      "effortLevel": "high"
+      "effortLevel": "xhigh"
+    },
+    "claude-sonnet-5": {
+      "effortLevel": "xhigh"
     }
   },
   "tui": "fullscreen",
