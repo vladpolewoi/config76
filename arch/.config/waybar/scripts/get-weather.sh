@@ -27,7 +27,8 @@ else
   update_cache
 fi
 
-# Indoor: latest row from the Xiaomi hygrometer logger (xiaomi-ble-logger.service).
+# Indoor: latest row from the Xiaomi hygrometer logger (xiaomi-ble-logger.service),
+# which also refreshes this module (SIGRTMIN+11) the moment a new reading lands.
 # Shown as "<wx> 16° / 23°  <hum> 47%": outdoor / indoor. Humidity turns orange outside
 # the 40–60% target; the indoor part is hidden after 30 min without data.
 CLIMATE_CSV="$HOME/vault76/04 Areas/Health/Home Sensors/data/climate.csv"

@@ -62,6 +62,7 @@
     "interval": 300,
     "format": "{}",
     "exec": "~/.config/waybar/scripts/get-weather.sh",
+    "signal": 11,
     "return-type": "plain",
     "tooltip": false,
   },
