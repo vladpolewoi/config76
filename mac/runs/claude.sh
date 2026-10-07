@@ -16,8 +16,8 @@ MERGE="$REPO_ROOT/claude/merge-mcp.py"
 
 # Claude Code reads mcpServers from ~/.claude.json (NOT ~/.claude/mcp.json).
 # merge-mcp.py unions the shared base + this platform's overlay into that file,
-# preserving any servers already present. Settings and the statusline are linked
-# by env.sh (setup_claude); this script only touches MCP so a plain `claude`
+# preserving any servers already present. Settings are linked by env.sh
+# (setup_claude); this script only touches MCP so a plain `claude`
 # launch after `git pull` still picks up new servers.
 if [ -f "$MERGE" ] && [ -f "$SHARED_MCP" ]; then
   result=$(python3 "$MERGE" "$SHARED_MCP" "$OVERLAY_MCP")

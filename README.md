@@ -8,7 +8,7 @@ Dotfiles and machine setup for macOS and Arch Linux.
 config76/
   .config/       Shared configs: nvim, tmux, ghostty
   .local/        Shared scripts
-  claude/        Shared Claude Code config (mcp, settings, statusline, skills)
+  claude/        Shared Claude Code config (mcp, settings, skills, mods)
   .zshrc         Base shell config (sourced by machine ~/.zshrc)
   mac/           macOS-specific setup + overlays
   arch/          Arch Linux-specific setup + overlays

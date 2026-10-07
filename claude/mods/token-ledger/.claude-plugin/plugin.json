@@ -1,0 +1,23 @@
+{
+  "name": "token-ledger",
+  "version": "0.1.0",
+  "description": "Real usage above the prompt, a cost line under each answer, and /tokens: where the tokens went by project, task, model and agent",
+  "author": {
+    "name": "Vlad Polevoi"
+  },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "goodTokens": {
+      "type": "number",
+      "title": "Lean session size",
+      "description": "Context tokens under which a session is lean: the badge stays green",
+      "default": 150000
+    },
+    "limitTokens": {
+      "type": "number",
+      "title": "Session size limit",
+      "description": "Context tokens past which a session is too heavy: the bar spans this and turns red past it",
+      "default": 300000
+    }
+  }
+}

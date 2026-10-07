@@ -124,7 +124,7 @@ setup_zshrc() {
 }
 
 # Link shared + platform Claude config into ~/.claude, then merge MCP servers.
-# Shared base lives in repo-root claude/ (settings.json, statusline-command.sh);
+# Shared base lives in repo-root claude/ (settings.json; mods/ is loaded in place);
 # the platform dir ($platform/.claude) overlays it (e.g. settings.local.json).
 # mcp.json is NOT symlinked — it is merged into ~/.claude.json by merge-mcp.py
 # (also re-run by runs/claude.sh so a plain `claude` launch stays in sync).

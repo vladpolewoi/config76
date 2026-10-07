@@ -9,10 +9,10 @@ OS-specific bits live in a platform overlay.
 ```
 claude/                     ← SHARED base (applied on Arch AND macOS)
   mcp.json                  MCP servers (cross-platform)
-  settings.json             permissions, model, hooks, plugins, statusline…
-  statusline-command.sh     statusline renderer (referenced by settings.json)
+  settings.json             permissions, model, hooks, plugins, env…
   merge-mcp.py              merges mcp servers into ~/.claude.json
   skills/                   shared skill library
+  mods/                     Claude Code mods (function-hook plugins), see below
 
 arch/.claude/               ← Arch overlay (usually empty)
   mcp.json                  { "mcpServers": {} }
@@ -31,7 +31,8 @@ per-machine override (e.g. mac's lower `effortLevel`).
 `env.sh` (`setup_claude`) on each machine:
 
 1. Symlinks shared `claude/*` then the platform overlay into `~/.claude/`
-   (`settings.json`, `statusline-command.sh`, and mac's `settings.local.json`).
+   (`settings.json`, and mac's `settings.local.json`). Directories such as
+   `mods/` are not linked; settings point at them in place.
    Claude Code deep-merges `settings.local.json` over `settings.json`.
 2. Runs `merge-mcp.py claude/mcp.json <platform>/.claude/mcp.json` to union the
    MCP servers into `~/.claude.json` (see below). `runs/claude.sh` re-runs this
@@ -92,3 +93,19 @@ won't start, check (1) its secret env var is exported from `secrets.env` and
 2. Use `${HOME}/...` for any local path; use `${SOME_SECRET}` for secrets and
    add the var to `secrets.env.example` (both platforms) — never commit a value.
 3. Re-run `bash env.sh` (or `config-sync pull`) to merge it into `~/.claude.json`.
+
+## Mods (`mods/`)
+
+Mods are plugins of function hooks that run inside Claude Code. Each one is a
+folder loaded straight from this repo through `CLAUDE_CODE_PLUGIN_DIRS` in the
+`env` block of `settings.json` (`~` allowed, `:`-separated for several), so a
+`git pull` is the whole update; edits reload live in a running session.
+
+- `mods/token-ledger/` — replaces the old statusline. A box above the prompt with
+  the context fill against a lean/limit budget (150k/300k, set in `/config`), a
+  bar by category, the 5h and weekly usage with reset times and the session $;
+  a card beside it with model, effort, repo and branch; a cost line under each
+  answer; and `/tokens [today|7d|30d]`, a pane of where the tokens went by
+  project, task, model and agent (ledger files in `~/.claude/token-ledger/`).
+  Check it with `claude plugin validate` and `claude plugin test` on the folder.
+

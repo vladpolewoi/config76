@@ -69,9 +69,8 @@
   },
   "model": "opus",
   "enableWorkflows": true,
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+  "env": {
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/config76/claude/mods/token-ledger"
   },
   "enabledPlugins": {
     "caveman@caveman": true,
