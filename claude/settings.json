@@ -60,11 +60,20 @@
       "Bash(git ls-files *)",
       "Bash(git config --get *)",
       "Bash(git config --list)",
-      "mcp__pencil"
+      "mcp__pencil",
+      "mcp__telegram__whoami",
+      "mcp__telegram__list_dialogs",
+      "mcp__telegram__get_messages",
+      "mcp__telegram__get_thread",
+      "mcp__telegram__get_reactions",
+      "mcp__telegram__get_unread_summary",
+      "mcp__telegram__search_messages",
+      "mcp__telegram__resolve_entity",
+      "mcp__telegram__download_media",
+      "mcp__telegram__send_message"
     ],
     "ask": [
-      "mcp__telegram__prepare_send",
-      "mcp__telegram__send_message"
+      "mcp__telegram__prepare_send"
     ]
   },
   "model": "opus",
