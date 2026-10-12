@@ -23,13 +23,14 @@ detect_dev_cmd() {
 }
 
 if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-  tmux new-session -d -s "$SESSION_NAME" -c "$FULL_PATH"
-  tmux send-keys -t "$SESSION_NAME:0" 'nvim' C-m
+  # Address windows by id, not index: tmux's base-index may be 1.
+  MAIN=$(tmux new-session -d -s "$SESSION_NAME" -c "$FULL_PATH" -P -F '#{window_id}')
+  tmux send-keys -t "$MAIN" 'nvim' C-m
 
   DEV_CMD=$(detect_dev_cmd)
   if [[ -n "$DEV_CMD" ]]; then
-    tmux new-window -t "$SESSION_NAME" -n dev -c "$FULL_PATH"
-    tmux send-keys -t "$SESSION_NAME:1" "$DEV_CMD" C-m
+    DEV=$(tmux new-window -d -t "$SESSION_NAME" -n dev -c "$FULL_PATH" -P -F '#{window_id}')
+    tmux send-keys -t "$DEV" "$DEV_CMD" C-m
   fi
 fi
 
