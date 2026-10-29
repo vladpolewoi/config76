@@ -2,7 +2,7 @@
 # graph76 Desk popup: a Chrome --app window living on special:tasks.
 #   graph76-desk.sh            toggle (Super+T); launches the window if it's gone
 #   graph76-desk.sh --preload  login: wait for the web unit, open the window hidden
-# Window rules for class chrome-localhost__-Default are in hyprland.conf.
+# Window rules for class chrome-localhost__-Default are in hyprland.lua.
 # Servers are systemd user units (graph76-api, graph76-web) from ~/code/graph76-new/tools/systemd.
 
 URL="http://localhost:5173"
@@ -28,4 +28,4 @@ if [ "$1" = "--preload" ]; then
 fi
 
 running || launch
-hyprctl dispatch togglespecialworkspace tasks >/dev/null
+hyprctl dispatch 'hl.dsp.workspace.toggle_special("tasks")' >/dev/null
