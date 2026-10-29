@@ -7,9 +7,9 @@ Four devices, one LAN. Know which one a job belongs on before starting it.
 | Role | Machine | Details |
 |---|---|---|
 | Dev desktop | **Arch** — `quest76` | `192.168.100.107` (eno1, DHCP), GTX 1060 6 GB, 16 cores, 15 GB RAM, Hyprland/Wayland. Always on. Runs Claude Code. Holds every repo. |
-| Build host | **Mac** — ssh alias `mac` | `192.168.100.178` (DHCP — moves; if unreachable, ask for the new IP, check its ED25519 key matches known_hosts, update `~/.ssh/config`), Xcode-beta. Signs and installs iOS builds via `iosdev`. Often asleep — check reachability before depending on it. |
+| Build host | **Mac** — ssh alias `mac` | `192.168.100.178` (DHCP — moves; if unreachable, ask for the new IP, check its ED25519 key matches known_hosts, update `~/.ssh/config`), 256 GB storage, Xcode-beta. Signs and installs iOS builds via `iosdev`. Often asleep — check reachability before depending on it. |
 | Phone | **iPhone 15 Pro Max** | iOS 27.0, Developer Mode on, paired to both Arch and the Mac. Owns the Budget76 ledger. |
-| Tablet | **iPad Air 11" (M2)** | Apple Pencil Pro. M2 ⇒ Apple Intelligence ⇒ `FoundationModels` available. |
+| Tablet | **iPad Air 11" (M2)** | 128 GB storage, Apple Pencil Pro. M2 ⇒ Apple Intelligence ⇒ `FoundationModels` available. Reaches the local review app at `http://192.168.100.107:3000`. |
 
 - **Source code lives on Arch only.** Anything needing the repo runs there — never assume the
   Mac or a device has it.

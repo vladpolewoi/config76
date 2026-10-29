@@ -97,3 +97,10 @@ shot76
 xiaomi-ble
 .wrangler
 skills/synced
+blender
+Claude
+mozilla
+Pen
+vercel-plugin
+*.bak-*
+synced

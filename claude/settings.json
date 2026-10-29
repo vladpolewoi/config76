@@ -1,4 +1,8 @@
 {
+  "env": {
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/code/claude-mods76/mods/token-ledger",
+    "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(ls)",
@@ -60,7 +64,6 @@
       "Bash(git ls-files *)",
       "Bash(git config --get *)",
       "Bash(git config --list)",
-      "mcp__pencil",
       "mcp__telegram__whoami",
       "mcp__telegram__list_dialogs",
       "mcp__telegram__get_messages",
@@ -70,7 +73,8 @@
       "mcp__telegram__search_messages",
       "mcp__telegram__resolve_entity",
       "mcp__telegram__download_media",
-      "mcp__telegram__send_message"
+      "mcp__telegram__send_message",
+      "mcp__pencil"
     ],
     "ask": [
       "mcp__telegram__prepare_send"
@@ -78,9 +82,6 @@
   },
   "model": "opus",
   "enableWorkflows": true,
-  "env": {
-    "CLAUDE_CODE_PLUGIN_DIRS": "~/config76/claude/mods/token-ledger"
-  },
   "enabledPlugins": {
     "caveman@caveman": true,
     "swift-lsp@claude-plugins-official": true
@@ -105,7 +106,7 @@
       "effortLevel": "medium"
     },
     "claude-fable-5-1": {
-      "effortLevel": "high"
+      "effortLevel": "xhigh"
     },
     "claude-opus-5": {
       "effortLevel": "high"
