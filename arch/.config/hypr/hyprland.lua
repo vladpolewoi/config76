@@ -78,6 +78,11 @@ hl.config({
     dwindle = {
         preserve_split = true,
     },
+
+    -- 0.57 default (1) flips the Odyssey to HDR10 on every fullscreen: blank + gamma jump
+    render = {
+        cm_auto_hdr = 0,
+    },
 })
 
 -- graph76 Desk popup (Super+T): Chrome --app window parked on special:tasks, floating, centred
