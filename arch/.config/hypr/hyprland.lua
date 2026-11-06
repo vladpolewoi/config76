@@ -176,7 +176,7 @@ hl.bind("SUPER + B", run(scripts .. "/pick-bluetooth.sh"))
 -- hl.bind("CTRL + SHIFT + F", run("bash " .. scripts .. "/screenshot-full.sh"))
 hl.bind("CTRL + SHIFT + F", run("bash " .. scripts .. "/screenshot-clip.sh"))     -- region -> clipboard, no window
 hl.bind("CTRL + SHIFT + S", run("bash " .. scripts .. "/screenshot-edit.sh"))     -- region -> swappy editor
-hl.bind("CTRL + SHIFT + P", run("bash " .. scripts .. "/mark.sh phone"))          -- iPhone screen -> numbered pins -> clipboard
+-- hl.bind("CTRL + SHIFT + P", run("bash " .. scripts .. "/mark.sh phone"))          -- iPhone screen -> numbered pins -> clipboard
 hl.bind("CTRL + SHIFT + M", run("bash " .. scripts .. "/mark.sh region"))         -- region       -> numbered pins -> clipboard
 hl.bind("CTRL + SHIFT + D", run("bash " .. scripts .. "/mark.sh drop"))           -- newest ~/Downloads image (LocalSend)
 

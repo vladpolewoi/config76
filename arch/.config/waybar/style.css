@@ -176,6 +176,7 @@ window#waybar {
 #custom-claude.warn { color: @accent-yellow; }
 #custom-claude.crit { color: @bright-red; }
 #custom-claude.error { color: @accent-red; opacity: 0.45; }
+#custom-claude.stale { opacity: 0.5; }
 #custom-claude.refreshing {
   color: @bright-cyan;
   animation: claude-pulse 0.45s ease-in-out infinite alternate;

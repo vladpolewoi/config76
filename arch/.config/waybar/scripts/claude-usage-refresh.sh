@@ -9,9 +9,6 @@
 
 SIGNAL=9
 STATE="/tmp/claude-usage.state"
-CACHE="/tmp/claude-usage.json"
-CREDS="$HOME/.claude/.credentials.json"
-ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 
 sig() { pkill -RTMIN+$SIGNAL waybar 2>/dev/null; }
 
@@ -24,17 +21,8 @@ for i in $(seq 0 8); do
   sleep 0.11
 done
 
-# Phase 2 — actually refresh the cached usage
-TOKEN=$(jq -r '.claudeAiOauth.accessToken // empty' "$CREDS" 2>/dev/null)
-if [ -n "$TOKEN" ]; then
-  resp=$(curl -s --max-time 5 \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "anthropic-beta: oauth-2025-04-20" \
-    "$ENDPOINT" 2>/dev/null)
-  if echo "$resp" | jq -e '.five_hour.utilization' >/dev/null 2>&1; then
-    printf '%s' "$resp" > "$CACHE"
-  fi
-fi
+# Phase 2 — actually refresh the cached usage (same parser as the module)
+"$(dirname "$0")/claude-usage.sh" --fetch
 
 # Phase 3 — confirm
 printf 'done' > "$STATE"; sig
