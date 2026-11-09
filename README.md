@@ -77,8 +77,6 @@ Each platform has a `secrets.env.example` — copy it to `secrets.env` and fill 
 
 | Variable | Description |
 |---|---|
-| `DSD_CALENDAR_HOST` | Calendar server IP |
-| `DSD_DEV_HOST` | Dev server IP |
 | `CONSULT_ANTHROPIC_API_KEY` | Anthropic API key for the `consult` MCP server (`claude/mcp.json`) |
 | `TG_MCP_ALLOWLIST` | Allowlist for the `telegram` MCP server (`claude/mcp.json`) |
 

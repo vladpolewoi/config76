@@ -111,8 +111,3 @@ such a credential, file it in the vault in the same session.
 - Claude never handles the master password: Claude authors the `bw` script, Vlad runs it
   in a real terminal so `bw unlock --raw` gets a TTY. Same for `.p12` export passphrases.
 - Items are secure notes (`type=2`) with custom fields; `type: 1` marks a field hidden.
-
-## Commands
-
-Custom commands are in `.claude/commands/`:
-- `/task` - Structured development workflow

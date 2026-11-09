@@ -34,7 +34,7 @@ Fallback that works (proven in the flow76 critique run): a plain Node script dri
 Chrome via Playwright**, borrowed from any repo that has playwright installed — run it with that
 repo's `node_modules` on NODE_PATH rather than installing per-task. For sites needing login, use
 `launchPersistentContext` with a dedicated profile dir (e.g. `~/.cache/claude-pw-profile`) and have
-the user log in once in a headed session — the Calendar-App login pattern, generalized. The
+the user log in once in a headed session. The
 subagent returns text + saved files, never inline images to its parent.
 
 ## 3. Reference capture (Pinterest, Mobbin, live sites)

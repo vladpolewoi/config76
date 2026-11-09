@@ -14,8 +14,8 @@ NOT in the working repo (respects the no-AI-artifacts rule for code repos). Stor
 the current project's memory dir:
 
 1. Take the current working directory.
-2. Slugify: replace every `/` with `-` (e.g. `/home/user76/code/Calendar-App` →
-   `-home-user76-code-Calendar-App`).
+2. Slugify: replace every `/` with `-` (e.g. `/home/user76/code/budget76` →
+   `-home-user76-code-budget76`).
 3. Path = `~/.claude/projects/<slug>/memory/HANDOFF.md`.
 
 If that memory dir doesn't exist, fall back to `~/.claude/projects/<slug>/memory/` after
@@ -42,8 +42,8 @@ Gotchas: <one line, optional — the thing future-me would trip on>
 Rules:
 - Pointers, not payloads. Link to WORKLOG / memory files / PR / file:line — don't paste
   their contents.
-- If the work is a /klna task, the WORKLOG.md frontmatter STATUS is already the resume
-  anchor — just point to it; don't duplicate it.
+- If the work already keeps a WORKLOG with a STATUS field, that is the resume anchor —
+  just point to it; don't duplicate it.
 - One screen max. If it's longer, you're dumping context instead of indexing it.
 
 After writing, tell the user the file path in one line.

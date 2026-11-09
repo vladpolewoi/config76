@@ -34,12 +34,6 @@
         "CONSULT_SPEND_LOG": "${HOME}/.consult-mcp/spend.jsonl"
       }
     },
-    "projects": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["${HOME}/code/mcp-servers/projects-mcp/dist/index.js"],
-      "env": {}
-    },
     "telegram": {
       "type": "stdio",
       "command": "uv",
