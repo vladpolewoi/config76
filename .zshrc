@@ -13,7 +13,7 @@ export PATH="$HOME/.local/bin:$HOME/.local/scripts:$PATH"
 export IMPECCABLE_NO_TELEMETRY=1
 export IMPECCABLE_NO_UPDATE_CHECK=1
 
-# Export gitignored MCP/tool secrets (consult, telegram, projects) so `claude`
+# Export gitignored MCP/tool secrets (telegram, …) so `claude`
 # and its stdio MCP servers can expand the ${VAR} refs in claude/mcp.json.
 # The platform file lives next to this one: <repo>/{mac,arch}/secrets.env.
 _c76_root="${${(%):-%N}:A:h}"

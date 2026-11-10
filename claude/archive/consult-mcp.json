@@ -1,0 +1,13 @@
+{
+  "_archived": "2026-11-10 \u2014 consult MCP retired (key out of credit; Vlad: use Fable subagents, not consult). Server code: mcp-servers/_archive/consult-mcp. Restore = put this block back into claude/mcp.json.",
+  "consult": {
+    "type": "stdio",
+    "command": "${HOME}/code/mcp-servers/consult-mcp/.venv/bin/consult-mcp",
+    "args": [],
+    "env": {
+      "CONSULT_ANTHROPIC_API_KEY": "${CONSULT_ANTHROPIC_API_KEY}",
+      "CONSULT_MAX_INPUT_USD": "1.50",
+      "CONSULT_SPEND_LOG": "${HOME}/.consult-mcp/spend.jsonl"
+    }
+  }
+}

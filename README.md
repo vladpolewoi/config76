@@ -77,7 +77,6 @@ Each platform has a `secrets.env.example` — copy it to `secrets.env` and fill 
 
 | Variable | Description |
 |---|---|
-| `CONSULT_ANTHROPIC_API_KEY` | Anthropic API key for the `consult` MCP server (`claude/mcp.json`) |
 | `TG_MCP_ALLOWLIST` | Allowlist for the `telegram` MCP server (`claude/mcp.json`) |
 
 ```bash
@@ -95,13 +94,13 @@ base + overlay into `~/.claude.json` — Claude Code reads servers from there, n
 from `~/.claude/mcp.json`. The merge is additive: manually-added servers survive.
 
 Secrets are **never hardcoded** — they reference environment variables
-(e.g. `${CONSULT_ANTHROPIC_API_KEY}`, `${TG_MCP_ALLOWLIST}`), which Claude Code
+(e.g. `${TG_MCP_ALLOWLIST}`), which Claude Code
 expands from the shell that launched it. Local paths use `${HOME}` so the
 committed config stays portable. Some servers also need a local checkout at
 `~/code/…` — see [`claude/README.md`](claude/README.md) for the full
 server/secret/prerequisite table.
 
-So on a fresh machine the `consult` (or `telegram`) server will not start until
+So on a fresh machine the `telegram` server will not start until
 its key is present in the shell environment. Put the value in `arch/secrets.env`
 (gitignored) and export it before launching `claude`, for example:
 

@@ -39,19 +39,25 @@ Effort is the first lever, model is the last.
 **Fable 5.1 is never the driver.** It bills 2× Opus per token ($10/$50 vs $5/$25),
 its thinking is always on, and its turns run long — so in a loop it drains the weekly
 cap several times faster for work Opus finishes. Reach it only as a **one-shot
-advisor**, via `mcp__consult__consult` (off-subscription key, own spend log):
+subagent**: the Agent tool with `model: "fable"`, one at a time, with a self-contained
+brief, a bounded budget ("at most N render-and-look cycles") and a written report back.
+**The consult MCP is retired** (2026-11-10: its key ran out of credit; Vlad: "use
+subagents and don't use consult stuff anymore") — never call `mcp__consult__consult`;
+the server code is archived in `mcp-servers/_archive/consult-mcp`.
 
 - Architecture/design tradeoffs, hard algo/math/proof, deep debug from a code+error
   dump, subtle-bug review of a diff, long-doc synthesis, "think hard about X".
-- **UI 0→1** — a new screen, new component, or from-scratch redesign: Fable *authors*
-  the actual SwiftUI, Opus integrates it **verbatim and does not restyle** (restyling
-  reintroduces Opus's taste and loses the polish). 1→n — tweaks, colors, spacing,
-  wiring inside an existing screen — stays on Opus; the structure constrains it.
-- Design consults take a screenshot; Fable has strong vision. Loop: Fable writes →
-  sim screenshot → paste back → refine.
+- **UI 0→1** — a new screen, new component, or from-scratch redesign: the Fable subagent
+  *authors* the actual code (in a fork/its own files), Opus integrates it **verbatim and
+  does not restyle** (restyling reintroduces Opus's taste and loses the polish). 1→n —
+  tweaks, colors, spacing, wiring inside an existing screen — stays on Opus; the
+  structure constrains it.
+- Design work: give the subagent the screenshot paths and the render command; Fable has
+  strong vision and looks at its own renders within the budget. Loop: Fable writes →
+  render → look → refine, then hands back.
 
-**Subagents run cheap.** Haiku 4.5 or Sonnet 5 at effort `low` for search, scribe, and
-mechanical fan-out work. Never spawn a Fable subagent.
+**Other subagents run cheap.** Haiku 4.5 or Sonnet 5 at effort `low` for search, scribe,
+and mechanical fan-out work. Fable subagents only for the one-shot jobs above.
 
 ## Web search — use the self-hosted SearXNG
 

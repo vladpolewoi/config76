@@ -30,6 +30,10 @@ into the vault. The data contract is `~/code/reference76/docs/SYNC.md`; the MCP 
      URLs and voice notes in one call instead of N `get_item`s. youtube → `yt-extract`;
      tiktok → `yt-extract` (yt-dlp handles it);
    - web → `mcp__searxng__web_url_read`; pinterest → the pin's image/description is the content.
+     A JS app page comes back as only its menu (Higgsfield blogs, run 9): `curl` the HTML and look in the
+     embedded data (`__NEXT_DATA__`, a `$R[…]` stream, a `contentUrl`); Higgsfield keeps the post text in a
+     binary `contentUrl` blob that a strings pass (`re.findall` of printable runs) reads in full, with the
+     post's video and file URLs beside it. Download into the session scratchpad, not the vault.
    - Music-only reels (most edits): the stock 15-frame sheet is too sparse for a 15 s reel. Make a 20-frame sheet
      (`scripts/sheet.sh <mp4> <out.jpg>`) and the cut list (`scripts/cuts.sh <mp4>`), read the edit from those
      (in a `while read` loop give each call `</dev/null`, or ffmpeg eats the loop's input: run 8 lost a letter of a code);

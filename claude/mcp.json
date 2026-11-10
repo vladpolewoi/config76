@@ -24,16 +24,6 @@
       "command": "npx",
       "args": ["-y", "@kimsungwhee/apple-docs-mcp@latest"]
     },
-    "consult": {
-      "type": "stdio",
-      "command": "${HOME}/code/mcp-servers/consult-mcp/.venv/bin/consult-mcp",
-      "args": [],
-      "env": {
-        "CONSULT_ANTHROPIC_API_KEY": "${CONSULT_ANTHROPIC_API_KEY}",
-        "CONSULT_MAX_INPUT_USD": "1.50",
-        "CONSULT_SPEND_LOG": "${HOME}/.consult-mcp/spend.jsonl"
-      }
-    },
     "telegram": {
       "type": "stdio",
       "command": "uv",

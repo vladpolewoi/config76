@@ -12,7 +12,7 @@ does it the same way on Arch and macOS:
     same-named server from an earlier one (shared first, platform overlay last).
   * Expands ${HOME} in commands/args/env values to the current home dir, so the
     committed configs stay portable (no /home/<user> or /Users/<user> literals).
-    Any OTHER ${VAR} (e.g. ${CONSULT_ANTHROPIC_API_KEY}, ${TG_MCP_ALLOWLIST}) is
+    Any OTHER ${VAR} (e.g. ${TG_MCP_ALLOWLIST}) is
     left intact for Claude Code to expand from the launching shell's environment
     — that is how secrets stay out of git.
   * Resolves bare command names (no "/") to absolute paths via $PATH.

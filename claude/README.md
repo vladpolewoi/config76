@@ -66,7 +66,6 @@ claude
 
 | Server | Needs |
 |---|---|
-| `consult` | `${CONSULT_ANTHROPIC_API_KEY}` (or user-level `~/.consult-mcp/.env`, which wins) + built `consult-mcp` (`.venv`) |
 | `telegram` | `${TG_MCP_ALLOWLIST}` = **path** to a JSON allowlist file (`{"chats":[…]}`) + one-time `uv run tg-mcp-auth` (keyring) |
 
 The code for these two lives in the **private** [`mcp-servers`](https://github.com/vladpolewoi/mcp-servers)
@@ -76,7 +75,6 @@ machine:
 ```bash
 gh repo clone vladpolewoi/mcp-servers ~/code/mcp-servers
 cd ~/code/mcp-servers
-(cd consult-mcp && uv sync)
 (cd telegram-mcp && uv sync && uv run tg-mcp-auth)   # one-time Telegram login
 ```
 

@@ -104,3 +104,5 @@ Pen
 vercel-plugin
 *.bak-*
 synced
+inkscape
+daemon.status.json
